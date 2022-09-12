@@ -1,0 +1,85 @@
+/*-- scss:defaults --*/
+  // fonts
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://use.typekit.net/iyt8rru.css");
+
+$font-family-sans-serif:      Fira Sans Condensed, sans-serif !default;
+$font-family-serif:           Fira Sans Condensed, serif !default;
+/*$font-family-monospace:       Fira Mono !default; */
+  
+  $presentation-heading-color: #314f4f;
+  $presentation-title-slide-text-align: "left";
+$link-color: #e64173;
+  $code-block-font-size: 0.6em;
+
+/*-- scss:rules --*/
+  
+  /* Set background for all headers 1 # slides <- got rid of to make pdfs white background
+.slide-background:first-child {
+  background-color: #314f4f;
+    /*background-image: url(image.jpg); 
+}*/ 
+  
+  
+  .reveal .centered {
+    text-align: center;
+  }
+
+.reveal .source {
+  font-size: 50%;
+  color: gray;
+  line-height: 1;
+  float: bottom;
+}
+
+
+.reveal .hi {
+  font-weight: bold;
+  color: #e64173;
+}
+
+.reveal .hi-purple {
+  font-weight: bold;
+  color: #6A5ACD;
+}
+
+.reveal .hi-turquoise {
+  font-weight: bold;
+  color: #44C1C4;
+}
+
+.reveal .custom-title {
+  font-size: 1.9em;
+  font-weight: bold;
+  position: absolute; 
+  left: 20px; 
+  top: 300px;
+  color: #FFFFFF;
+}
+
+.reveal .custom-subtitle {
+  font-size: 1.5em;
+  font-weight: bold;
+  position: absolute; 
+  left: 20px; 
+  top: 400px;
+  color: #FFFFFF;
+    
+}
+
+.reveal .custom-author {
+  font-size: 1em;
+  position: absolute; 
+  left: 20px; 
+  top: 475px;
+  color: #FFFFFF;
+}
+
+.reveal .custom-institution {
+  font-size: 0.75em;
+  position: absolute; 
+  left: 20px; 
+  top: 590px;
+  color: #FFFFFF;
+    
+}

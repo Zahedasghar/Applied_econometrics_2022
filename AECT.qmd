@@ -1,0 +1,100 @@
+---
+footer: "zahidasghar.com"
+format:
+  html:
+    theme: [default,ryan.scss]
+editor: visual
+---
+
+## Topics in Applied Economics
+
+::: columns
+::: {.column width="30%"}
+![](zahid.jpg){width="600"}
+:::
+
+::: {.column width="70%"}
+::: nonincremental
+Zahid Asghar, Professor,School of Economics
+
+Quaid-i-Azam University, Islamabad
+:::
+:::
+:::
+
+## Course Overview
+
+This course is designed to introduce [students to focus on research design]{.yellow}, [thinking clearly with data]{.yellow} and apply techniques through computer-based exercises and learn to replicate the econometric results of published economic articles using new data and econometric tools. This course will
+
+-   Emphasis on understanding theory through applications and problem solving, rather than mathematical theorems and complex proofs
+
+-   Working as a learning community to improve statistical and econometric skills necessary in the study of economics.
+
+-   [Introduction to Econometrics with R](https://scpoecon.github.io/ScPoEconometrics/index.html)
+
+-   [R code for mastering metrics](https://jrnold.github.io/masteringmetrics/)
+
+-   [Mastering metrics: Path from cause to effect](https://www.masteringmetrics.com/)
+
+-   [Econometrics in class-labs](https://tyleransom.github.io/econometricslabs.html)
+
+-   [The Effect](theeffectbook.net)
+
+-   [Impact Evaluation in Practice](https://www.worldbank.org/en/programs/sief-trust-fund/publication/impact-evaluation-in-practice)
+
+## Course Objectives
+
+-   Learning 5 furious tools in econometrics: RCTs, Regression, IV, DID, RDD besides Quantile Regression, Short Panel data applications
+
+-   Machine Learning for Social Sciences and Causal Inference
+
+-   Replicate econometric results of published articles using new data set
+
+-   Read, understand, and evaluate empirical papers in professional journals
+
+By the end of this course, students will be familiar with tools to be applied for program evaluation and better understand research design.
+
+## Books
+
+I will be providing students with several sets of practice questions during the course. For those students who would like to refer to a textbook during this course you have several possibilities:
+
+## Course contents
+
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Week** | **Title**                                     | **Topics covered**                                                               | **Essential reading**                                                                                                                                                                             |
++:=========+:==============================================+:=================================================================================+:==================================================================================================================================================================================================+
+| 1        | Software                                      | Introduction to R, RStudio , STATA, gituhub                                      | Using RStudio cloud, github, quarto                                                                                                                                                               |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 2        | Revision of Regression and inference          | Application of all multiple linear and nonlinear regression concepts             | [here](zahidasghar.com/econometrics/Linear_regression) and [here](zahidasghar.com/econometrics/Nonlinear_regression)                                                                              |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|          | continued                                     | In class-labs                                                                    | continued                                                                                                                                                                                         |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 4        | Internal and External validity                | Threats to internal and external validity of regression models                   |                                                                                                                                                                                                   |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 5        | Limdep model                                  | Logit, Probit, Ordered, Discrete Choice, Count Data Models                       | Applications                                                                                                                                                                                      |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 6        | do                                            | do                                                                               | do                                                                                                                                                                                                |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 7        | **Measurement and DAGs**                      |                                                                                  |                                                                                                                                                                                                   |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 8        | **DAGs and potential outcomes**               |                                                                                  |                                                                                                                                                                                                   |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 9        | Regression IV (Panel data)                    | Data with repeated observations of the same units over time; fixed-effect models | Chapter 10, "Regression with Panel Data", in Stock and Watson, available                                                                                                                          |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 10       | Instrumental Variable                         | Does cigarette tax reduce demand for smoking?                                    | Mastering Metrics, The Effect and Ch5 Impact Eval in Practice                                                                                                                                     |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 11       | RCTs and Difference in differences estimators | Experiments, Quasi-experiments                                                   | [How to Read Economics Research Papers: Randomized Controlled Trials (RCTs)](https://mru.org/courses/mastering-econometrics/how-read-economics-research-papers-randomized-controlled-trials-rcts) |
+|          |                                               |                                                                                  | Ch 18 [The Effect](https://theeffectbook.net/ch-DifferenceinDifference.html)                                                                                                                      |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 12       | Continued                                     | continued                                                                        | continued                                                                                                                                                                                         |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 13       | Regression Discontinuity Designs              | Regression Discontinuity Designs                                                 | Mastering Metrics , ch20 from [The Effect](https://theeffectbook.net/ch-RegressionDiscontinuity.html),                                                                                            |
+|          |                                               |                                                                                  |                                                                                                                                                                                                   |
+|          |                                               |                                                                                  | Ch6: Impact Eval in Practice                                                                                                                                                                      |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 14       | continued                                     | continued                                                                        | ch20 from [The Effect](https://theeffectbook.net/ch-RegressionDiscontinuity.html)                                                                                                                 |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 15       | Projects evaluations                          |                                                                                  |                                                                                                                                                                                                   |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 16       | Projects evaluations                          |                                                                                  |                                                                                                                                                                                                   |
++----------+-----------------------------------------------+----------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
