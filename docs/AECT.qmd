@@ -10,7 +10,7 @@ editor: visual
 
 ::: columns
 ::: {.column width="30%"}
-![](zahid.JPG){width="512"}
+![](images/zahid.JPG){width="512"}
 :::
 
 ::: {.column width="70%"}
