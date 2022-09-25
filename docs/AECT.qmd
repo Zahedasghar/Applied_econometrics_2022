@@ -2,7 +2,7 @@
 footer: "zahidasghar.com"
 format:
   html:
-    theme: [default,custom.scss]
+    theme: [default,ryan.scss]
 editor: visual
 ---
 
@@ -67,7 +67,7 @@ I will be providing students with several sets of practice questions during the 
 +:=========+:==============================================+:=================================================================================+:===============================================================================================================================================================================================================================================================================+
 | 1        | Software                                      | Introduction to R, RStudio , STATA, gituhub                                      | [RStudio cloud](rstudio.cloud) [github](github.com) [Quarto](quarto.pub)                                                                                                                                                                                                       |
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 2        | Revision of Regression and inference          | Application of all multiple linear and nonlinear regression concepts             | [here](zahidasghar.com/econometrics/Linear_regression) and [here](zahidasghar.com/econometrics/Nonlinear_regression)                                                                                                                                                           |
+| 2        | Revision of Regression and inference          | Application of all multiple linear and nonlinear regression concepts             | [here](https://zahidasghar.com/econometrics/Linear_regression) and [here](https://zahidasghar.com/econometrics/Nonlinear)                                                                                                                                                      |
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 |          | continued                                     | In class-labs                                                                    | continued                                                                                                                                                                                                                                                                      |
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -81,7 +81,7 @@ I will be providing students with several sets of practice questions during the 
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | 8        | **DAGs and potential outcomes**               | do                                                                               | do                                                                                                                                                                                                                                                                             |
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 9        | Regression IV (Panel data)                    | Data with repeated observations of the same units over time; fixed-effect models | Chapter 10, "Regression with Panel Data", in Stock and Watson, available                                                                                                                                                                                                       |
+| 9        | Regression IV (Panel data)                    | Data with repeated observations of the same units over time; fixed-effect models | Chapter 10, "Regression with Panel Data", in Stock and Watson, available [here](https://zahidasghar.com/econometrics/Panel_reg)                                                                                                                                                |
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | 10       | Instrumental Variable                         | Does cigarette tax reduce demand for smoking?                                    | Mastering Metrics, The Effect and Ch5 Impact Eval in Practice                                                                                                                                                                                                                  |
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -99,3 +99,120 @@ I will be providing students with several sets of practice questions during the 
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | 16       | Projects evaluations                          |                                                                                  |                                                                                                                                                                                                                                                                                |
 +----------+-----------------------------------------------+----------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(kableExtra)
+library(patchwork)
+library(fontawesome)
+library(gapminder)
+library(scales)
+```
+
+## Data Science
+
+-   [You go into data analysis with the tools you know, not the tools you need]{.hi}
+
+-   The next 2-3 weeks are all about giving you the tools you need
+
+    -   Admittedly, a bit before you know what you need them *for*
+
+-   We will extend them as we learn specific models
+
+## R
+
+::: columns
+::: {.column width="50%"}
+-   **Free** and **open source**
+
+-   A very large community
+
+    -   Written by statisticians for statistics
+    -   Most packages are written for `R` first
+
+-   Can handle virtually any data format
+
+-   Makes replication easy
+
+-   Can integrate into documents (with `R markdown`)
+
+-   R is a *language* so it can do *everything*
+
+    -   A good stepping stone to learning other languages like *Python*
+:::
+
+::: {.column width="50%"}
+![](images/r.png)
+:::
+:::
+
+## Excel (or Stata) Can't Do This
+
+::: panel-tabset
+## Code
+
+```{r}
+#| echo: true
+#| eval: false
+ggplot(data = gapminder, 
+       aes(x = gdpPercap,
+           y = lifeExp,
+           color = continent))+
+  geom_point(alpha=0.3)+
+  geom_smooth(method = "lm")+
+	scale_x_log10(breaks=c(1000,10000, 100000),
+	              label=scales::dollar)+
+	labs(x = "GDP/Capita",
+	     y = "Life Expectancy (Years)")+
+  facet_wrap(~continent)+
+  guides(color = F)+
+  theme_light()
+```
+
+## Output
+
+```{r}
+#| echo: false
+#| eval: true
+ggplot(data = gapminder, 
+       aes(x = gdpPercap,
+           y = lifeExp,
+           color = continent))+
+  geom_point(alpha=0.3)+
+  geom_smooth(method = "lm")+
+	scale_x_log10(breaks=c(1000,10000, 100000),
+	              label=scales::dollar)+
+	labs(x = "GDP/Capita",
+	     y = "Life Expectancy (Years)")+
+  facet_wrap(~continent)+
+  guides(color = F)+
+  theme_light()
+```
+:::
+
+## Or This
+
+::: panel-tabset
+### Input
+
+The average GDP per capita is `` ` r dollar(mean(gapminder$gdpPercap)) ` `` with a standard deviation of `` ` r dollar(sd(gapminder$gdpPercap)) ` ``.
+
+### Output
+
+The average GDP per capita is `r dollar(mean(gapminder$gdpPercap))` with a standard deviation of `r dollar(sd(gapminder$gdpPercap))`.
+:::
+
+## Or This
+
+```{r}
+#| echo: true
+#| fig-width: 18
+#| fig-align: center
+library(leaflet)
+leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng = 73.136946, lat =33.748294 ,
+             popup = "School of Economics, QAU, Islamabad")
+```

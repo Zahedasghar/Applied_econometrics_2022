@@ -15,6 +15,69 @@ span.underline{text-decoration: underline;}
 div.column{display: inline-block; vertical-align: top; width: 50%;}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -24,10 +87,19 @@ ul.task-list{list-style: none;}
 <script src="AECT_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="AECT_files/libs/quarto-html/anchor.min.js"></script>
 <link href="AECT_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="AECT_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="AECT_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="AECT_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="AECT_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="AECT_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="AECT_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="AECT_files/libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="AECT_files/libs/jquery-1.12.4/jquery.min.js"></script>
+<link href="AECT_files/libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="AECT_files/libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="AECT_files/libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="AECT_files/libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="AECT_files/libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="AECT_files/libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="AECT_files/libs/leaflet-binding-2.1.1/leaflet.js"></script>
 
 
 </head>
@@ -104,7 +176,7 @@ ul.task-list{list-style: none;}
 <td style="text-align: left;">2</td>
 <td style="text-align: left;">Revision of Regression and inference</td>
 <td style="text-align: left;">Application of all multiple linear and nonlinear regression concepts</td>
-<td style="text-align: left;"><a href="zahidasghar.com/econometrics/Linear_regression">here</a> and <a href="zahidasghar.com/econometrics/Nonlinear_regression">here</a></td>
+<td style="text-align: left;"><a href="https://zahidasghar.com/econometrics/Linear_regression">here</a> and <a href="https://zahidasghar.com/econometrics/Nonlinear">here</a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
@@ -146,7 +218,7 @@ ul.task-list{list-style: none;}
 <td style="text-align: left;">9</td>
 <td style="text-align: left;">Regression IV (Panel data)</td>
 <td style="text-align: left;">Data with repeated observations of the same units over time; fixed-effect models</td>
-<td style="text-align: left;">Chapter 10, “Regression with Panel Data”, in Stock and Watson, available</td>
+<td style="text-align: left;">Chapter 10, “Regression with Panel Data”, in Stock and Watson, available <a href="https://zahidasghar.com/econometrics/Panel_reg">here</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">10</td>
@@ -193,6 +265,108 @@ ul.task-list{list-style: none;}
 </tr>
 </tbody>
 </table>
+</section>
+<section id="data-science" class="level2">
+<h2 class="anchored" data-anchor-id="data-science">Data Science</h2>
+<ul>
+<li><p><span class="hi">You go into data analysis with the tools you know, not the tools you need</span></p></li>
+<li><p>The next 2-3 weeks are all about giving you the tools you need</p>
+<ul>
+<li>Admittedly, a bit before you know what you need them <em>for</em></li>
+</ul></li>
+<li><p>We will extend them as we learn specific models</p></li>
+</ul>
+</section>
+<section id="r" class="level2">
+<h2 class="anchored" data-anchor-id="r">R</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><p><strong>Free</strong> and <strong>open source</strong></p></li>
+<li><p>A very large community</p>
+<ul>
+<li>Written by statisticians for statistics</li>
+<li>Most packages are written for <code>R</code> first</li>
+</ul></li>
+<li><p>Can handle virtually any data format</p></li>
+<li><p>Makes replication easy</p></li>
+<li><p>Can integrate into documents (with <code>R markdown</code>)</p></li>
+<li><p>R is a <em>language</em> so it can do <em>everything</em></p>
+<ul>
+<li>A good stepping stone to learning other languages like <em>Python</em></li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><img src="images/r.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="excel-or-stata-cant-do-this" class="level2">
+<h2 class="anchored" data-anchor-id="excel-or-stata-cant-do-this">Excel (or Stata) Can’t Do This</h2>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Output</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> gapminder, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> gdpPercap,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> lifeExp,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> continent))<span class="sc">+</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.3</span>)<span class="sc">+</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>)<span class="sc">+</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_log10</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">1000</span>,<span class="dv">10000</span>, <span class="dv">100000</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">label=</span>scales<span class="sc">::</span>dollar)<span class="sc">+</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"GDP/Capita"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">y =</span> <span class="st">"Life Expectancy (Years)"</span>)<span class="sc">+</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>continent)<span class="sc">+</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> F)<span class="sc">+</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+"none")` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="AECT_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="or-this" class="level2">
+<h2 class="anchored" data-anchor-id="or-this">Or This</h2>
+<div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Input</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Output</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>The average GDP per capita is <code>` r dollar(mean(gapminder$gdpPercap)) `</code> with a standard deviation of <code>` r dollar(sd(gapminder$gdpPercap)) `</code>.</p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>The average GDP per capita is $7,215.33 with a standard deviation of $9,857.45.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="or-this-1" class="level2">
+<h2 class="anchored" data-anchor-id="or-this-1">Or This</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">leaflet</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addTiles</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addMarkers</span>(<span class="at">lng =</span> <span class="fl">73.136946</span>, <span class="at">lat =</span><span class="fl">33.748294</span> ,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">popup =</span> <span class="st">"School of Economics, QAU, Islamabad"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="htmlwidget-27a1d3586312cf193fda" style="width:100%;height:180px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-27a1d3586312cf193fda">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addMarkers","args":[33.748294,73.136946,null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"School of Economics, QAU, Islamabad",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[33.748294,33.748294],"lng":[73.136946,73.136946]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
 </section>
 
 </main>
