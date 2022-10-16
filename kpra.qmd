@@ -4,7 +4,6 @@ format: revealjs
 editor: visual
 ---
 
-
 ```{r}
 #| label: setup
 #| include: false

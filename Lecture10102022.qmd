@@ -1,0 +1,37 @@
+---
+title: "Lectures 11-10-2022"
+format: revealjs
+editor: visual
+---
+
+## Plan of lecture
+
+-   Doing economics
+
+-   [youth-bulge](https://blog.ephorie.de/the-youth-bulge-of-afghanistan-the-hidden-force-behind-political-instability)
+
+-   Frisch-Waugh Theorem
+
+-   The Effect ch3 and 4
+
+## Definition of holding a factor constant
+
+-   Mroz data from Ch4 the effect book
+
+-   youth-bulge (replication)
+
+-   Frisch-Waugh Theorem in diagram and in practice
+
+-   [Empirical example of Frisch_Waugh](https://zahidasghar.com/econometrics/Linear_regression/)
+
+## Students task
+
+-   Browse mroz data and explain
+
+-   browse youth-bulge theory and discuss
+
+-   Browse doing economics ch4 and discuss besides replicating results
+
+## Youtube
+
+This is a video I created for [Frisch-Waugh Theorem](https://youtu.be/U1RqG8tK_6E)
