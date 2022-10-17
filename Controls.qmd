@@ -256,7 +256,7 @@ animate(p,nframes=200)
 
 ## Concept Checks
 
-- Selene is a huge bore at parties, but sometimes brings her girlfriend Donna who is super fun. If you regressed $PartyFunRating$ on $SeleneWasThere$ but not $DonnaWasThere$, what would the coefficient on $SeleneWasThere$ look like and why?
+- Mona is a huge bore at parties, but sometimes brings her friend Donna who is super fun. If you regressed $PartyFunRating$ on $MonaWasThere$ but not $DonnaWasThere$, what would the coefficient on $MonaWasThere$ look like and why?
 - Describe the steps necessary to estimate the effect of $Exports$ on $GrowthRate$ while controlling for $AmountofConflict$ (a continuous variable). There are three "explain/regress" steps and two "subtract" steps.
 - If we estimate the same $\hat{\beta}_1$ with or without $Z$ added as a control, does that mean we have no endogeneity problem? What *does* it mean exactly?
 

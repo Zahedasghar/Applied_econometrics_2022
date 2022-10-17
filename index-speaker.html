@@ -10,8 +10,8 @@
   <meta name="generator" content="quarto-1.0.38">
 
   <meta name="author" content="Zahid Asghar">
-  <meta name="dcterms.date" content="2022-10-16">
-  <title>Controls and the Concept of Endogeniety</title>
+  <meta name="dcterms.date" content="2022-10-17">
+  <title>Controls</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -384,14 +384,19 @@
     <div class="slides">
 
 <section id="title-slide" data-background-color="#447099" class="center">
-  <h1 class="title">Controls and the Concept of Endogeniety</h1>
+  <h1 class="title">Controls</h1>
   <p class="author">Zahid Asghar</p>
-  <p class="date">10/16/22</p>
+  <p class="date">10/17/22</p>
 </section>
 
 <section id="endogeneity" class="slide level2">
 <h2>Endogeneity</h2>
-<p>For more details on it, please visit <a href="https://theeffectbook.net/">The Effect</a> - Last week we discussed concept of Frisch-Wuaght Theorem - This week we’re going to learn about more on controls with a focus on endogeneity! - Where it pops up and what we can do about it - At least as a starter (we’ll revisit this topic many times)</p>
+<ul>
+<li>Last week was all about handling sampling variation and avoiding inference error</li>
+<li>This week we’re all about endogeneity!</li>
+<li>Where it pops up and what we can do about it</li>
+<li>At least as a starter (we’ll revisit this topic many times)</li>
+</ul>
 </section>
 <section id="endogeneity-recap" class="slide level2">
 <h2>Endogeneity Recap</h2>
@@ -585,7 +590,7 @@
 <section id="concept-checks" class="slide level2">
 <h2>Concept Checks</h2>
 <ul>
-<li>Selene is a huge bore at parties, but sometimes brings her girlfriend Donna who is super fun. If you regressed <span class="math inline">\(PartyFunRating\)</span> on <span class="math inline">\(SeleneWasThere\)</span> but not <span class="math inline">\(DonnaWasThere\)</span>, what would the coefficient on <span class="math inline">\(SeleneWasThere\)</span> look like and why?</li>
+<li>Mona is a huge bore at parties, but sometimes brings her friend Donna who is super fun. If you regressed <span class="math inline">\(PartyFunRating\)</span> on <span class="math inline">\(MonaWasThere\)</span> but not <span class="math inline">\(DonnaWasThere\)</span>, what would the coefficient on <span class="math inline">\(MonaWasThere\)</span> look like and why?</li>
 <li>Describe the steps necessary to estimate the effect of <span class="math inline">\(Exports\)</span> on <span class="math inline">\(GrowthRate\)</span> while controlling for <span class="math inline">\(AmountofConflict\)</span> (a continuous variable). There are three “explain/regress” steps and two “subtract” steps.</li>
 <li>If we estimate the same <span class="math inline">\(\hat{\beta}_1\)</span> with or without <span class="math inline">\(Z\)</span> added as a control, does that mean we have no endogeneity problem? What <em>does</em> it mean exactly?</li>
 </ul>

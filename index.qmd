@@ -1,5 +1,5 @@
 ---
-title: "Controls and the Concept of Endogeniety"
+title: "Controls"
 author: "Zahid Asghar"
 date: today
 format: 
@@ -69,9 +69,8 @@ theme_metro_regtitle <- function(x) {
 
 ## Endogeneity
 
-For more details on it, please visit [The Effect](https://theeffectbook.net/)
-- Last week we discussed concept of Frisch-Wuaght Theorem
-- This week we're going to learn about more on controls with a focus on endogeneity!
+- Last week was all about handling sampling variation and avoiding inference error
+- This week we're all about endogeneity!
 - Where it pops up and what we can do about it 
 - At least as a starter (we'll revisit this topic many times)
 
@@ -257,7 +256,7 @@ animate(p,nframes=200)
 
 ## Concept Checks
 
-- Selene is a huge bore at parties, but sometimes brings her girlfriend Donna who is super fun. If you regressed $PartyFunRating$ on $SeleneWasThere$ but not $DonnaWasThere$, what would the coefficient on $SeleneWasThere$ look like and why?
+- Mona is a huge bore at parties, but sometimes brings her friend Donna who is super fun. If you regressed $PartyFunRating$ on $MonaWasThere$ but not $DonnaWasThere$, what would the coefficient on $MonaWasThere$ look like and why?
 - Describe the steps necessary to estimate the effect of $Exports$ on $GrowthRate$ while controlling for $AmountofConflict$ (a continuous variable). There are three "explain/regress" steps and two "subtract" steps.
 - If we estimate the same $\hat{\beta}_1$ with or without $Z$ added as a control, does that mean we have no endogeneity problem? What *does* it mean exactly?
 
