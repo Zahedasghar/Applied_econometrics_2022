@@ -1,0 +1,924 @@
+---
+title: "Problem Set 6"
+author: "Answer Key" # put your name here!
+date: "Ungraded, For Practice Only" # due date
+format:
+  html: 
+    self-contained: true # so we don't need other files (like plot images) 
+    toc: true # show a table of contents
+    toc-location: left
+    theme: default
+    df-print: paged # by default, show tables (tibbles) as paged tables
+editor: visual
+execute:
+  echo: true # show all input code in final document
+---
+
+```{r}
+#| label: load-packages
+#| warning: false
+#| message: false
+# load packages, they are all installed for you already (in the cloud only)
+library(tidyverse) # your friend and mine
+library(broom) # for tidy regression
+library(modelsummary) # for nice regression tables
+library(fixest) # for fixed effects and 2SLS/IV regression
+library(car) # for f-test
+library(dagitty) # for dags
+library(ggdag) # for plotting dags
+library(ggraph) # for plotting dags
+```
+
+# Theory and Concepts
+
+## Question 1
+
+In your own words, describe what *fixed effects* are, when we can use them, and how they remove endogeneity.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+Fixed effects can be used for panel data, where each observation$_{it}$ belongs to a group $i$ and a time period $t$. Running a simple OLS model as usual, known as a **pooled model** would be biased due to systematic relationships within and between groups and time periods that cause $X_{it}$ to be endogenous:
+
+$$\hat{Y}_{it}=\beta_0+\beta_1 X_{it}+u_{it}$$
+
+Group-fixed effects $(\alpha_i$) pull out of the error term all of the factors that explain $Y_{it}$ that are stable over time within each individual group ($i$), but vary across groups. For example, if groups are U.S. states, state-fixed effects pull out all of the error term all of the idiosyncrasies of each state that do not change over time, such as cultural differences, geographical differences, historical differences, population differences, etc. Group fixed effects *do not* pull out factors that change over time, such as federal laws passed, recessions affecting all states, etc.
+	
+Time-fixed effects $(\theta_i)$ pull out of the error term all of the factors that explain $Y_{it}$ that change over time but do not vary across groups. For example, if groups are U.S. states, and time is in years, year-fixed effects pull out all of the error term all of the changes over the years that affect all U.S. states, such as recessions, inflation, national population growth, national immigration trends, or federal laws passed that affect all states. Time-fixed effects *do not* pull out factors that do not change over time. 
+	
+$$\hat{Y}_{it}=\beta_0+\beta_1 X_{it}+ \alpha_{i} + \theta_{t} + \epsilon_{it}$$
+	
+Mechanically, OLS estimates a separate constant for each group (and/or each time period), giving the expected value of $Y_{it}$ for that group or time-period. This can be done by either de-meaning the data and calculating OLS coefficients by exploiting the variation *within* each group and/or time period (which is why fixed effects estimators are called "within" estimators), or by creating a dummy variable for each group and/or time period (and omitting one of each, to avoid the dummy variable trap). 
+
+
+## Question 2
+
+In your own words, describe the logic of a *difference-in-difference* model: what is it comparing against what, and how does it estimate the effect of treatment? What assumption must be made about the treatment and control group for the model to be valid?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+$$\hat{Y}_{it}=\beta_0+\beta_1 \, \text{Treated}_i +\beta_2 \, \text{After}_{t}+\beta_3 \, (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+
+A difference-in-difference model compares the difference before and after a treatment between a group that receives the treatment and a group that does not. By doing so, we can isolate the effect of the treatment. It is easiest to see in the following equation:
+
+$$\Delta \Delta Y = (\text{Treated}_{\text{after}}-\text{Treated}_{\text{before}})-(\text{Control}_{\text{after}}-\text{Control}_{\text{before}})$$
+
+In OLS regression, we can simply make two dummy variables for observations$_it$ depending on the group and the time period each observation is:  
+
+$$\text{Treated}_i = \begin{cases}
+        1 & \text{if } i \text{ receives treatment} \\
+   			0 & \text{if } i \text{ does not receive treatment }\\
+  		\end{cases}$$
+  		
+$$\text{After}_t = \begin{cases}
+    		1 & \text{if } t \text{is after treatment period} \\
+   			0 & \text{if } t \text{is before treatment period}\\
+  		\end{cases}$$
+
+Lastly, we make an interaction term $\text{Treated}_i \times \text{After}_t$ which isolates the treatment effect, captured by the coefficient on this term, $\beta_3$. 
+
+Diff-in-diff models assume a counterfactual that if the treated group did not receive treatment, it would have experience the same change as the control group over the pre- to post-treatment period. 
+
+A classic example is if a state(s) passes a law and others do not. We want to compare the difference in the difference before and after the law was passed between states that passed the law and states that did not: 
+
+$$\Delta_i \Delta_t Outcome = (\text{Passed}_{after}-\text{Passed}_{before})-(\text{Didn't}_{after}-\text{Didn't}_{before})$$
+
+"Treatment$_i$" and time-fixed effects for "After$_t$" to estimate the treatment effect (still $\beta_3$): 
+$$\hat{Y}_{it}=\alpha_i +\theta_{t}+\beta_3 \, (\text{Treated}_i \times \text{After}_{t})+\epsilon_{it}$$
+```{r}
+#| fig-height: 6
+#| fig-align: center
+
+control<-tribble(
+  ~x, ~y,
+  1, 1,
+  2, 3
+)
+treatment<-tribble(
+  ~x, ~y,
+  1, 4,
+  2, 8
+)
+
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 1+2
+  geom_label(x=2.2,y=3, color = "black", label=expression(hat(beta)[0]+hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "black", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dashed", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  # beta 3
+  geom_label(x=2.25,y=8, color = "black",
+             label=expression(hat(beta)[0]+hat(beta)[1]+hat(beta)[2]+hat(beta)[3]))+
+
+  # beta 1 dif
+  annotate("segment", x = 1, xend = 1, y = 1, yend = 4, colour = "black", size=1, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=1,y=2.5, size = 4, color = "black", label=expression(hat(beta)[1]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 1, yend = 3, colour = "black", size=1, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=2, size = 4, color = "black", label=expression(hat(beta)[2]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 4, yend = 6, colour = "black", size=1, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=5, size = 4, color = "black", label=expression(hat(beta)[2]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 6, yend = 8, colour = "blue", size=1, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=7, size = 4, color = "blue", label=expression(hat(beta)[3]))+
+
+    scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=14)
+```
+
+|    | Control | Treatment | **Group Diff** $(\Delta Y_i)$ |
+|----|---------|-----------|---------------------------|
+| Before | $\beta_0$ | $\beta_0+\beta_1$ | $\beta_1$ |
+| After | $\beta_0+\beta_2$ | $\beta_0+\beta_1+\beta_2+\beta_3$ | $\beta_1+\beta_3$ |
+| **Time Diff** $(\Delta Y_t)$ | $\beta_2$ | $\beta_2+\beta_3$ | $\beta_3$ **Diff-in-diff** $(\Delta_i \Delta_t)$ |
+
+## Question 3
+
+In your own words, describe the logic of an *instrumental variables* model: how does this approach identify the causal effect of $X$ on $Y$? What makes for a valid instrument? When using a Two-Stage Least Squares approach, what is estimated at each stage?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+Suppose we have a simple linear regression model of 
+
+$$Y_i = \beta_0 + \beta_1 \, X_i + u_i$$
+
+Instrumental variables techniques attempt to isolate and use only the variation in an endogenous $X$ variable (correlated with the error term, other factors that cause $Y$) that is *exogenous*, that is, *not* correlated with the error term. This is done by using an *instrumental variable*, $I$ that is correlated with $X$, but not a direct cause of $Y$; only *indirectly*, through $X$, does it cause $Y$. Thus, there are two conditions for a valid instrument:
+
+1. **Relevance** (the **“inclusion condition”**): instrument $I$ must be correlated with $X$.
+2. **Exogeneity** (the **"exclusion condition"**): instrument $I$ must *not* be correlated with the error term, $u$. 
+
+The first condition is testable with a *"first stage"* regression of $X$ on the instrument(s) $I$ (and any covariates, $X_2, \cdots X_k$):
+
+$$X_i = \gamma_0 + \gamma_1 I_i + w_i$$
+If $\gamma_1$ is statistically significant (i.e. we can reject $H_0$: $\gamma_1 = 0$), we have good evidence that the instrument is relevant.
+
+The second condition is *not* testable statistically, and requires a plausible argument that $I$ does not cause $Y$ *except* through $X$.
+
+We also run the *"reduced form*" regression of the instrument $I$ on outcome $Y$ (and any covariates):
+
+$$Y_i = \pi_0 + \pi_1 I_i + v_i$$
+
+The instrumental variable estimator for the original $\beta_1$, $\beta_1^{IV} = \frac{pi_1}{\gamma_1}$, that is, we scale the "direct" effect of $I \rightarrow Y$ ($\pi_1$) by the effect of $I \rightarrow X$ ($\gamma_1$), since it is only $X$ that directly affects $Y$, not $I$.
+
+```{r}
+iv_colors <- tribble(
+  ~name, ~Variable, ~Type,
+  "X", "X", "Endogenous",
+  "Y", "Y", "Outcome",
+  "I", "Z", "Exogenous",
+  "U", "Z", "Exogenous",
+)
+
+iv_dag <- dagify(Y ~ X + U,
+              X ~ Z + U,
+              outcome = "Y",
+              exposure = "X") %>% 
+  tidy_dagitty(seed = 256) 
+
+# Add node types/colors to DAG data
+iv_dag$data <- iv_dag$data %>% 
+  left_join(iv_colors, by = "name")
+
+iv_plot<-ggplot(data = iv_dag)+
+  aes(x = x,
+      y = y,
+      xend = xend,
+      yend = yend)+
+  geom_dag_point(size = 10,
+                 aes(color = Type)) +
+  geom_dag_edges(start_cap = circle(4, "mm"),
+                 end_cap = circle(4, "mm")) +
+  geom_dag_text(size = 3, family = "Fira Sans") +
+  scale_dag()+
+  theme_void()+
+  scale_shape_manual(values = c(16,17))+
+  theme(legend.position = "none")
+iv_plot
+```
+
+We can generalize this, if we want to use multiple endogenous variables and/or multiple instruments, with *Two Stage Least Squares (2SLS)*. We run the first stage regression of the endogenous variable $X$ on the instrument(s) $I$:
+
+$$X_i = \gamma_0 + \gamma_1 I_i + w_i$$
+
+Then we take the predicted (or fitted) values of $\hat{X_i}$ from the first stage, and substitute them in for our exogenous variable $X$ in the *second stage* regression:
+
+$$Y_i = \beta_0 + \beta_1 \, \hat{X}_i + u_i$$
+This gives us an unbiased estimator of $\beta_1$, so long as the instrument(s) is valid. 
+
+# R Questions
+
+Answer the following questions using `R`. When necessary, please write answers in the same document (rendered to `html` or `pdf`, typed `.doc(x)`, or handwritten) as your answers to the above questions. Be sure to include (email or print an `.R` file, or show in your rendered quarto document) your code and the outputs of your code with the rest of your answers.
+
+## Question 4 (Fixed Effects)
+
+- [<i class="fas fa-table"></i> `PeaceCorps.csv`](http://metricsf22.classes.ryansafner.com/files/data/PeaceCorps.csv)
+
+Download and read in `PeaceCorps.csv` dataset. If you don't want to download/upload it, you can read it in directly from the url by running this chunk:
+
+```{r}
+# run or edit this chunk
+pc <- read_csv("http://metricsf22.classes.ryansafner.com/files/data/PeaceCorps.csv")
+```
+
+
+How do people respond to changes in economic conditions? Are they more likely to pursue public service when private sector jobs are scarce? This dataset contains variables at the U.S. State (& D.C.) level:
+
+| Variable | Description |
+|----------|-------------|
+| `state` | U.S. State |
+| `year` | Year |
+| `appspc` | Applications to the Peace Corps (per capita) in State |
+| `unemployrate` | State unemployment rate |
+
+**Do more people apply to the Peace Corps when unemployment increases (and reduces other opportunities)?**
+
+### Part A
+
+Before looking at the data, what does your economic intuition tell you? Explain your hypothesis.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+If joining the Peace Corps is a substitute for private sector jobs, then as unemployment rises, so too should applications. Although, it could also be possible that people also are more willing to opt out of the workforce when the economy is strong, so we should examine this empirically to be sure.
+
+
+### Part B
+
+To get the hang of the data we're working with, `count` (separately) the number of `state`s, and the number of `year`s. Get the number of `n_distinct()` `state`s and `year`s (Do these inside the `summarize()` command), as well as the `distinct()` values of each (don't use the `summarize()` command for this part).
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# count number of states
+pc %>%
+  count(state)
+
+# count number of years
+pc %>%
+  count(year)
+
+# get number of distinct states and years
+pc %>%
+  summarize(Num_states = n_distinct(state),
+            Num_years = n_distinct(year))
+
+# get distinct values of states
+pc %>%
+  distinct(state)
+
+# get distinct values of years
+pc %>%
+  distinct(year)
+```
+
+### Part C
+
+Create a scatterplot of `appspc` (Y) on `unemployrate` (X). Which State is an outlier? How would this affect the pooled regression estimates? Create a *second* scatterplot that does not include this State.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+ggplot(data = pc)+
+    aes(x = unemployrate,
+        y = appspc)+
+    geom_point(aes(color = as.factor(state)))+
+    geom_smooth(method = "lm")+
+  scale_x_continuous(breaks=seq(0,20,2),
+                     labels = function(x){paste(x,"%", sep="")})+
+  labs(x = "Unemployment Rate",
+       y = "Peace Corps Applications (per capita)")+
+  theme_bw(base_family = "Fira Sans Condensed",
+           base_size=16)+
+  theme(legend.position = "none") # remove legend for State colors
+```
+
+We can see there are very clear outliers at the top. Let's plot `text` instead of `point`s, using the `stateshort` to see which observations are which states:
+
+```{r}
+ggplot(data = pc)+
+    aes(x = unemployrate,
+        y = appspc)+
+    geom_text(aes(color = as.factor(state), label = stateshort))+ #<<
+    geom_smooth(method = "lm")+
+  scale_x_continuous(breaks=seq(0,20,2),
+                     labels = function(x){paste(x,"%", sep="")})+
+  labs(x = "Unemployment Rate",
+       y = "Peace Corps Applications (per capita)")+
+  theme_bw(base_family = "Fira Sans Condensed",
+           base_size=16)+
+  theme(legend.position = "none") # remove legend for State colors
+```
+
+Clearly `DIS`, which is District of Columbia, are the outliers. Let's make a second scatterplot without them:
+
+```{r, fig.retina=3}
+pc %>%
+  filter(state != "DISTRICT OF COLUMBIA") %>%
+ggplot(data = .)+
+    aes(x = unemployrate,
+        y = appspc)+
+    geom_point(aes(color = as.factor(state)))+
+    geom_smooth(method = "lm")+
+  scale_x_continuous(breaks=seq(0,20,2),
+                     labels = function(x){paste(x,"%", sep="")})+
+  labs(x = "Unemployment Rate",
+       y = "Peace Corps Applications (per capita)")+
+  theme_bw(base_family = "Fira Sans Condensed",
+           base_size=16)+
+  theme(legend.position = "none") # remove legend for State colors
+```
+
+### Part D
+
+Run two *pooled* regressions, one with the outliers, and one without them. Write out the estimated regression equation for each. Interpret the coefficient, and comment on how it changes between the two regressions.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+pooled <- lm(appspc ~ unemployrate, data = pc)
+summary(pooled)
+```
+
+$$\widehat{\text{Apps per capita}_{it}}=46.23+0.84 \, \text{Unemployment Rate}_{it}$$
+For every 1 percentage point increase in unemployment, there are 0.46 more applications to the Peace Corps per capita.
+
+```{r}
+pc_no_dc <- pc %>%
+  filter(state != "DISTRICT OF COLUMBIA")
+
+pooled_no_dc <- lm(appspc ~ unemployrate, data = pc_no_dc)
+summary(pooled_no_dc)
+```
+
+$$\widehat{\text{Apps per capita}_{it}}=48.59-0.37 \, \text{Unemployment Rate}_{it}$$
+
+For every 1 percentage point increase in unemployment, there are 0.37 *fewer* applications to the Peace Corps per capita.
+
+The coefficient changes signs and becomes a smaller magnitude by dropping the outliers (DC)!
+
+### Part E
+
+Now run a regression with State fixed effects using the dummy variable method. (Ensure that `state` is a factor variable, and insert in the regression. You can either `mutate()` it into a `factor` beforehand, or just do `factor(state)` in the `lm` command.) Interpret the marginal effect of `unemployrate` on `appspc`. How did it change?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+fe_reg <- lm(appspc ~ unemployrate + factor(state), data = pc)
+summary(fe_reg)
+```
+
+### Part F
+
+Find the coefficient for Maryland and interpret it. How many applications per capita does Maryland have?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+This is just like any model with dummy variables representing different categories. The constant (12.61) represents the *reference category* not put in the regression (to avoid the dummy variable trap), i.e. `ALABAMA.` 
+
+The coefficient on Maryland is 45.19. This means that, on average, there are 45.19 *more* applications per capita in Maryland *than Alabama* over the time period in the data. To get the average for Maryland, we add $12.61+45.19=57.80$.
+
+```{r}
+# if we want to extract it using R
+fe_reg_tidy <- tidy(fe_reg)
+
+AL <- fe_reg_tidy %>%
+  filter(term == "(Intercept)") %>%
+  pull(estimate)
+
+MD_AL_diff <- fe_reg_tidy %>%
+  filter(term == "factor(state)MARYLAND") %>%
+  pull(estimate)
+
+AL + MD_AL_diff
+```
+
+### Part G
+
+Now try using the `feols()` command (from the `fixest` package), which de-means the data, and make sure you get the same results as Part E. Do you get the same marginal effect of `unemployrate` on `appspc`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+fe_reg_alt <- feols(appspc ~ unemployrate | factor(state),
+                    data = pc)
+summary(fe_reg_alt)
+```
+
+### Part H
+
+Now also include *year* fixed effects in your regression, using the dummy variable method. Interpret the marginal effect of `unemployrate` on `appspc`. How did it change?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+TWFE_reg <- lm(appspc ~ unemployrate + factor(state) + factor(year), data = pc)
+summary(TWFE_reg)
+```
+
+For every 1 percentage point increase in the unemployment rate, there are 0.71 applications per capita to the Peace Corps.
+
+### Part I
+
+What would be the predicted number of applications in Maryland in 2011 at an unemployment rate of 5%?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+$$\begin{align*}
+\widehat{\text{Apps per capita}_{it}}&=14.49 +0.71 \, \text{Unemployment Rate}_{it} + 45.24 \, \text{Maryland_i} -8.89 \text{2007}_t \\
+\widehat{\text{Apps per capita}_{MD, 2011}}&=14.49 +0.71 \, (5) + 45.24 \, (1) -8.89 (1) \\
+\widehat{\text{Apps per capita}_{MD, 2011}}& \approx 54.09 \\
+\end{align*}$$
+
+```{r}
+# if we want to extract it using R
+TWFE_reg_tidy <- tidy(TWFE_reg)
+
+constant <- TWFE_reg_tidy %>%
+  filter(term == "(Intercept)") %>%
+  pull(estimate)
+
+unemploy_me <- TWFE_reg_tidy %>%
+  filter(term == "unemployrate") %>%
+  pull(estimate)
+
+MD_dif <- TWFE_reg_tidy %>%
+  filter(term == "factor(state)MARYLAND") %>%
+  pull(estimate)
+
+dif_2007 <- TWFE_reg_tidy %>%
+  filter(term == "factor(year)2007") %>%
+  pull(estimate)
+
+constant + unemploy_me * 5 + MD_dif + dif_2007
+
+# some rounding error
+```
+
+### Part J
+
+Now try using the `feols()` command, which de-means the data, and make sure you get the same results as Part H. Do you get the same marginal effect of `unemployrate` on `appspc`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+TWFE_reg_alt <- feols(appspc ~ unemployrate | factor(state) + factor(year),
+                    data = pc)
+summary(TWFE_reg_alt)
+```
+
+### Part K
+
+Can there still be endogeneity in this model? Give some examples.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+Yes. There may be other time-varying variables that are omitted and correlated with unemployment, but not picked up in the time-fixed effect since they are not the same in each state. Examples could be a local market bubble some years in Texas or Nevada, but not in Maine, or bad weather in Florida one year, but not in Wyoming, etc.^[It's better to use the `plm()`-generated regressions so as to avoid the multitude of coefficients for the state and year dummies! You certainly could use the dummy variable ones and manually list all of the variables to suppress in the table inside `omit_coefs()`...]
+
+### Part L
+
+Create a nice regression table (using `modelsummary`) for comparison of the regressions in Parts D, G, and J.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+modelsummary(models = list("OLS" = pooled,
+                           "OLS (no DC)" = pooled_no_dc,
+                           "State FE" = fe_reg_alt,
+                           "TWFE" = TWFE_reg_alt),
+             fmt = 2, # round to 2 decimals
+             output = "html",
+             coef_rename = c("(Intercept)" = "Constant",
+                             "unemployrate" = "Unemployment Rate"),
+             gof_map = list(
+               list("raw" = "nobs", "clean" = "n", "fmt" = 0),
+               #list("raw" = "r.squared", "clean" = "R<sup>2</sup>", "fmt" = 2),
+               list("raw" = "adj.r.squared", "clean" = "Adj. R<sup>2</sup>", "fmt" = 2),
+               list("raw" = "rmse", "clean" = "SER", "fmt" = 2)
+             ),
+             escape = FALSE,
+             stars = c('*' = .1, '**' = .05, '***' = 0.01)
+)
+```
+
+## Question 5 (Difference-in-Differences)
+
+- [<i class="fas fa-table"></i> `TexasSchools.csv`](http://metricsf22.classes.ryansafner.com/files/data/TexasSchools.csv)
+
+Download and read in `TexasSchools.csv` dataset. If you don't want to download/upload it, you can read it in directly from the url by running this chunk:
+
+```{r}
+# run or edit this chunk
+schools <- read_csv("http://metricsf22.classes.ryansafner.com/files/data/TexasSchools.csv")
+```
+
+Are teachers paid more when school board members are elected "off cycle" when there are not major national political elections (e.g. odd years) than "on cycle?" The argument is that during "off" years, without attention on state or national elections, voters will pay less attention to the election, and teachers can more effectively mobilize for higher pay, versus "on" years where voters are paying more attention. This data comes from Anzia, Sarah (2012), "The Election Timing Effect: Evidence from a Policy Intervention in Texas." *Quarterly Journal of Political Science* 7(3): 277-297, and follows 1,020 Texas school board districts from 2003–2009.
+
+From 2003–2006, all districts elected their school board members off-cycle. A change in Texas policy in 2006 led some, but not all, districts to elect their school board members on-cycle from 2007 onwards.
+
+| Variable | Description |
+|----------|-------------|
+| `LnAvgSalary` | logged average salary of teachers in district |
+| `Year` | Year |
+| `OnCycle` | `=1` if school boards elected on-cycle (e.g. same year as national and state elections), `=0` if elected off-cycle |
+| `pol_freedom` | Political freedom index score (2018) from 1 (least) top 10 (most free) |
+| `CycleSwitch` | `=1` if district switched from off- to on-cycle elections |
+| `AfterSwitch` | `=1` if year is after 2006 |
+
+### Part A
+
+Run a pooled regression model of `LnAvgSalary` on `OnCycle`. Write the estimated regression equation, and interpret the coefficient on `OnCycle.` Are there any sources of bias (consider in particular the argument in the question prompt)?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+pooled_reg <- lm(LnAvgSalary ~ OnCycle, data = schools)
+summary(pooled_reg)
+```
+
+$$\widehat{\text{log(Average Salary})_it} = 10.67-0.03 \, \text{OnCycle}_{it}$$
+
+Recognize this is a linear-log model and $X$ is a dummy variable. School board elections that are held `OnCycle` $(=1)$ lead to $\hat{\beta_1 \times 100\% = −0.03 \times 100\% = −3\%$ lower teacher salaries. This is highly statistically significant.
+
+This is almost certainly biased. There are probably things correlated at the district level between both whether or not districts vote (or switch to voting) on cycle/off cycle and with teacher salaries. Perhaps some districts have strong/weak teachers unions and that determines whether they choose to vote on or off cycle (off cycle would be preferable, and perhaps districts with strong teachers unions kept the elections off cycle).
+
+Also, there could be changes in the entire State over time-perhaps all Texas teacher salaries were increasing or decreasing over the years.
+
+
+### Part B
+
+Some schools decided to switch to an on-cycle election after 2006. Consider this, `CycleSwitch` the "treatment." Create a variable to indicate post-treatment years (i.e. years after 2006). Call it `After`. Create a second, *interaction* variable to capture the interaction effect between those districts that *switched*, and *after* the treatment.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# create a variable, that is a factor, using ifelse() function
+#   if the year is greater than 2006, code "After" as 1,
+#   if the year is NOT greater than 2006, code "After" as 0
+schools <- schools %>%
+  mutate(After = factor(ifelse(test = Year > 2006,
+                        yes = 1,
+                        no = 0)))
+head(schools)
+```
+
+### Part C
+
+Now estimate a difference-in-difference model with your variables in Part B: `CycleSwitch` is the treatment variable, `After` is your post-treatment indicator, and add an _interaction_ variable to capture the interaction effect between those districts that _switched_, and _after_ the treatment. Write down the estimated regression equation (to four decimal places). 
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+dnd <- lm(LnAvgSalary ~ CycleSwitch + After + CycleSwitch:After, data = schools)
+summary(dnd)
+```
+
+$$\widehat{\text{Log(Average Salary)}_{it}}=10.6711-0.0240 \, \text{Cycle Switch}_{i} + 0.0093 \, \text{After}_t - 0.0086 \, (\text{Cycle Switch}_i \times \text{After}_t)$$
+
+### Part D
+
+Interpret what each coefficient means from Part C.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+- $\hat{\beta_0}$: districts before 2007 that did not switch had `ln(AvgSalary)` of 10.6711
+- $\hat{\beta_1}$: districts before 2007 that did switch had `ln(AvgSalary)` 0.0240 lower
+than districts that did not switch
+- $\hat{\beta_2}$: all districts after the change had `ln(AvgSalary)` 0.0093 higher than before the change
+- $\hat{\beta_3}$: districts that made a switch had a 0.0086 *lower* change in `ln(AvgSalary)` over time than districts that did not switch
+
+
+### Part E
+
+Using your regression equation in Part C, calculate the expected logged average salary $(Y)$ for districts in Texas:
+
+i. *Before* the switch that did *not* switch
+ii. *After* the switch that did *not* switch
+iii. *Before* the switch that *did* switch
+iv. *After* the switch that *did* switch
+
+<!--WRITE YOUR ANSWERS BELOW -->
+i. Before change and did not switch: $\hat{\beta_0} = 10.6711$
+ii. After change and did not switch: $\hat{\beta_0}+\hat{\beta_2} = 10.6711 + 0.0093 = 10.6804$
+iii. Before change and did switch: $\hat{\beta_0}+\hat{\beta_1} = 10.6711 − 0.0240 = 10.6471$
+iv. After change and did switch: $\hat{\beta_0}+\hat{\beta_1}+\hat{\beta_2}+\hat{\beta_3} = 10.6711−0.0240+ 0.0093 − 0.0086 = 10.6478$
+
+|    | Before | After | Time Diff |
+|----|--------|-------|-----------|
+| Did not switch | $\hat{\beta}_0$ | $\hat{\beta}_0+\hat{\beta}_2$ | $\hat{\beta}_2$ |
+| Switched | $\hat{\beta}_0 + \hat{\beta}_1$ | $\hat{\beta}_0 + \hat{\beta}_1 + \hat{\beta}_2 + \hat{\beta}_3$ | $\hat{\beta}_2 + \hat{\beta}_3$ |
+| **Group Diff** | $\hat{\beta}_1$ | $\hat{\beta}_1+\hat{\beta}_3$ | $\hat{\beta}_3$ |
+
+|    | Before | After | Time Diff |
+|----|--------|-------|-----------|
+| Did not switch | 10.6711 | 10.6804 | 0.00093 |
+| Switched | 10.6471 | 10.6478 | 0.0007 |
+| Group Diff | 0.0240 | 0.0226 | -0.0086 |
+
+### Part F
+
+Confirm your estimates in Part E by finding the mean logged average salary for each of those four groups in the data. (Hint, `filter()` properly then `summarize()`.)
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# avg log salary for districts BEFORE that did NOT switch
+schools %>%
+  filter(CycleSwitch == 0,
+         After == 0) %>%
+  summarize(average = mean(LnAvgSalary, na.rm=T)) # need to remove NA's
+
+# avg log salary for districts AFTER that did NOT switch
+schools %>%
+  filter(CycleSwitch == 0,
+         After == 1) %>%
+  summarize(average = mean(LnAvgSalary, na.rm=T)) # need to remove NA's
+
+# avg log salary for districts BEFORE that DID switch
+schools %>%
+  filter(CycleSwitch == 1,
+         After == 0) %>%
+  summarize(average = mean(LnAvgSalary, na.rm=T)) # need to remove NA's
+
+# avg log salary for districts AFTER that DID switch
+schools %>%
+  filter(CycleSwitch == 1,
+         After == 1) %>%
+  summarize(average = mean(LnAvgSalary, na.rm=T)) # need to remove NA's
+```
+
+### Part G
+
+Write out the difference-in-difference equation, and calculate the difference-in-difference. Make sure it matches your estimate from the regression.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+$$\begin{align*}
+		\Delta \Delta ln(AvgSalary)&=(Switched_{after}-Switched_{before})-(Didn't_{after}-Didn't_{before})\\
+		&=(10.6478-10.6471)-(10.6804-10.6711)\\
+		&=(0.0007)-(0.0093)\\
+		&=-0.0086\\ \end{align*}$$
+
+This is $\beta_3$.
+
+### Part H
+
+Can we say anything about the types of districts that switched? Can we say anything about all salaries in the districts in the years after the switch?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+We can see that the districts that switched paid 2.3% less to their teachers to begin with. $\beta_2$ shows the difference, before treatment, between the treated (districts that switched) and control groups (districts that did not switch). 
+	
+We can see that all districts saw a 0.93% increase in teacher salaries after the years after the switch. $\beta_3$ shows the difference, for both the treatment and control, of salaries over time (before and after the switch).
+
+
+### Part I
+
+Now let’s generalize the diff-in-diff model. Instead of the treatment and post-treatment dummies, use district-and year-fixed effects and the interaction term. Interpret the coefficient on the interaction term. 
+
+This is doable with the dummy variable method, but there will be a *lot* of dummies! I suggest using `feols()` from the `fixest` package.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+dnd_twfe_reg <- feols(LnAvgSalary ~ CycleSwitch*After | factor(DistNumber) + factor(Year),
+                    data = schools)
+summary(dnd_twfe_reg)
+```
+
+### Part J
+
+Create a nice regression table (using `modelsummary`) for comparison of the regressions in Parts A, C, and I. 
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+modelsummary(models = list("OLS" = pooled_reg,
+                           "DND" = dnd,
+                           "TWFE" = dnd_twfe_reg),
+             fmt = 2, # round to 2 decimals
+             output = "html",
+             coef_rename = c("(Intercept)" = "Constant",
+                             "OnCycle" = "On Cycle",
+                             "CycleSwitch" = "Switched",
+                             "After1" = "After Switch",
+                             "CycleSwitch:After1" = "Switched x After"),
+             gof_map = list(
+               list("raw" = "nobs", "clean" = "n", "fmt" = 0),
+               #list("raw" = "r.squared", "clean" = "R<sup>2</sup>", "fmt" = 2),
+               list("raw" = "adj.r.squared", "clean" = "Adj. R<sup>2</sup>", "fmt" = 2),
+               list("raw" = "rmse", "clean" = "SER", "fmt" = 2)
+             ),
+             escape = FALSE,
+             stars = c('*' = .1, '**' = .05, '***' = 0.01)
+)
+
+```
+
+## Question 6 (Instrumental Variables)
+
+- [<i class="fas fa-table"></i> `RainIV.csv`](http://metricsf22.classes.ryansafner.com/files/data/RainIV.csv)
+
+Download and read in `RainIV.csv` dataset. If you don't want to download/upload it, you can read it in directly from the url by running this chunk:
+
+```{r}
+# run or edit this chunk
+ivrain <- read_csv("http://metricsf22.classes.ryansafner.com/files/data/RainIV.csv")
+```
+
+Does economic growth reduce the odds of civil conflict? Consider data on 41 African countries between 1981-1999. Below are key variables (among others in the data):
+
+| Variable | Description |
+|----------|-------------|
+| `Internalconflict` | `=1` if civil war (<25 deaths), else `=0` |
+| `LaggedGDPGrowth` | GDP Growth rate from previous year |
+| `LagggedRainfallGrowth` | Change (in mm) of rain from previous year |
+| `InitialGDP` | GDP per capita (1979) |
+| `Democracy` | Polity II score |
+| `country_name` | Country name |
+| `country_code` | Three letter ISO country code |
+| `year` | Year |
+| `pop` | Population |
+| `Mountains` | Percentage of territory that is mountainous terrain |
+| `EthnicFrac` | Ethnic fractionalization index (probability two random individuals are NOT from the same ethnic group) |
+| `ReligiousFrac` | Religious fractionalization index (probability two random individuals are NOT from the same religion) |
+
+### Part A 
+
+Make a scatterplot between `Internalconflict` (as `y`) and `LaggedGDPGrowth` (as `x`), and add a regression line.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+ggplot(data = ivrain)+
+    aes(x = LaggedGDPGrowth,
+        y = InternalConflict)+
+    geom_jitter(aes(color = as.factor(country_name)), height=0.05)+
+    geom_smooth(method = "lm")+
+  scale_x_continuous(labels = function(x){paste(x,"%", sep="")})+
+  scale_y_continuous(breaks = c(0,1))+
+  labs(x = "Lagged GDP Growth Rate",
+       y = "Internal Conflict")+
+  theme_bw(base_family = "Fira Sans Condensed",
+           base_size=16)+
+  theme(legend.position = "none") # remove legend for State colors
+
+```
+
+### Part B
+
+Run a regression of Internalconflict` on `LaggedGDPGrowth.` Note that since $Y$ is a dummy variable, $\beta_1$ is the probability of internal conflict in country $i$ at time $t$. Write out the estimated regression equation and interpret the marginal effect. 
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+conflict_reg <- lm(InternalConflict ~ LaggedGDPGrowth, data = ivrain)
+summary(conflict_reg)
+```
+
+$$\widehat{\text{Internal Conflict}_{it}} = 0.2674 - 0.0821 \, \text{Lagged GDP Growth}_{it}$$
+
+For every additional 1% of GDP growth per capita from the previous year, the probability of internal conflict decreases by 0.08 (8%). 
+
+### Part C
+
+Run another regression, adding in `LaggedGDPGrowth`, `InitialGDP`, `Democracy`, `Mountains` `EthnicFrac`, and `ReligiousFrac` as controls. Write out the estimated regression equation. What happens to the marginal effect of `LaggedGDPGrowth`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+conflict_reg_controls <- lm(InternalConflict ~ LaggedGDPGrowth + InitialGDP + Democracy + Mountains + EthnicFrac + ReligiousFrac, data = ivrain)
+summary(conflict_reg_controls)
+```
+
+$$\begin{align*}
+\widehat{\text{Internal Conflict}_{it}} = & \, 0.0704 - 0.1088 \, \text{Lagged GDP Growth}_{it} - 0.0569 \, \text{Initial GDP}_it + 0.0012 \, \text{Democracy}_{it} +\\
+& 0.0039 \, \text{Mountains}_{it} + 0.3248 \, \text{Ethnic Fractionalization}_{it} + 0.0105 \, \text{Religious Fractionalization}_{it} \\ \end{align*}$$
+
+The marginal effect of `LaggedGDPGrowth` increases from -0.0821 to -0.1088.
+
+### Part D
+
+Now let's consider `LaggedRainfallGrowth` as a potential instrument for `LaggedGDPGrowth`. First, check the correlations between `InternalConflict`, `LaggedGDPGrowth` and `LaggedRainfallGrowth`.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+ivrain %>%
+select(InternalConflict, LaggedGDPGrowth, LaggedRainfallGrowth) %>%
+cor()
+```
+
+### Part E
+
+Now let's consider if `LaggedRainfallGrowth` is a **relevant** instrument (the "inclusion condition") by running the *first stage* regression of `LaggedGDPGrowth` on `LaggedRainfallGrowth` and the rest of the controls from part C. Is the OLS estimate on `LaggedRainfallGrowth` statistically significant?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+first_stage <- lm(LaggedGDPGrowth ~ LaggedRainfallGrowth + InitialGDP + Democracy + Mountains + EthnicFrac + ReligiousFrac,
+                 data = ivrain)
+summary(first_stage)
+```
+
+Yes, `LaggedRainfallGrowth` is statistically significant (since the p-value is much smaller than 0.05), implying the instrument is relevant. Each additional 1mm increase in rainfall from the previous year increases GDP growth rates by 0.04 percentage points.
+
+### Part F
+
+There is no statistical test for whether `LaggedRainfallGrowth` is exogenous (the "exclusion condition"). Do you think it is plausible that `LaggedRainfallGrowth` is uncorrelated with the error term; that is, with any other factors that cause conflict; and that it **only** affects conflict through economic growth?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+Rainfall and weather certainly affects crop yields, which may be a large part of the economy in these countries, so this would certainly be a channel by which it affects conflict. Can we concieve of rainfall affecting *other* things that affect whether a country is experiencing internal conflict? 
+
+### Part G
+
+Extract and save the fitted values of your first stage regression from part E. Now run the *second stage* regression by using the fitted values of `LaggedGDPGrowth` and the control variables from parts C and E. What is the marginal effect of `LaggedGDPGrowth` on `InternalConflict`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# add fitted values from firststage regression to the ivrain data as a column called "laggdpgrowth_hat"
+ivrain$laggdpgrowth_hat <- first_stage$fitted.values
+
+second_stage <- lm(InternalConflict ~ laggdpgrowth_hat + InitialGDP + Democracy + Mountains + EthnicFrac + ReligiousFrac, data = ivrain)
+summary(second_stage)
+```
+
+The effect is now a much larger -2.0631 (for every additional 1% of GDP growth per capita from the previous year, the probability of internal conflict decreases by 2.06 (206%). 
+), but it is no longer statistically significant.
+
+### Part H
+
+Now run the same regression using `feols()` from the `fixest` package.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+tsls <- feols(InternalConflict ~ InitialGDP + Democracy + Mountains + EthnicFrac + ReligiousFrac | LaggedGDPGrowth ~ LaggedRainfallGrowth,
+           data = ivrain)
+summary(tsls)
+```
+
+### Part I
+
+Make a nice regression table using `modelsummary()` using your results from Parts B, G, and H.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+modelsummary(models = list("OLS" = conflict_reg,
+                           "2SLS" = second_stage,
+                           "2SLS (fixest)" = tsls),
+             fmt = 2, # round to 2 decimals
+             output = "html",
+             coef_rename = c("(Intercept)" = "Constant",
+                             "LaggedGDPGrowth" = "Lag GDP Growth Rate",
+                             "laggdpgrowth_hat" = "Lag GDP Growth Rate",
+                             "fit_LaggedGDPGrowth" = "Lag GDP Growth Rate"),
+             gof_map = list(
+               list("raw" = "nobs", "clean" = "n", "fmt" = 0),
+               #list("raw" = "r.squared", "clean" = "R<sup>2</sup>", "fmt" = 2),
+               list("raw" = "adj.r.squared", "clean" = "Adj. R<sup>2</sup>", "fmt" = 2),
+               list("raw" = "rmse", "clean" = "SER", "fmt" = 2)
+             ),
+             escape = FALSE,
+             stars = c('*' = .1, '**' = .05, '***' = 0.01)
+)
+
+```

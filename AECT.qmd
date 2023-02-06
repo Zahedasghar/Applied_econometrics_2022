@@ -1,5 +1,6 @@
 ---
 title: "Quantitative Method using R"
+title-block-banner: true
 author: "Zahid Asghar"
 date: today
 format: 

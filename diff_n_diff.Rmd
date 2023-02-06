@@ -1,0 +1,1964 @@
+---
+title: "4.2 — Difference-in-Difference Models"
+subtitle: "ECON 480 • Econometrics • Fall 2021"
+
+#date:
+output:
+  xaringan::moon_reader
+    lib_dir: libs
+    df_print: paged
+    css: [custom.css, "hygge"] #, metropolis, metropolis-fonts
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+      slideNumberFormat: |
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+          </div>
+        </div>
+    
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo=F,
+                      message=F,
+                      warning=F,
+                      fig.retina=3)
+library(tidyverse)
+library(ggthemes)
+library(parallel)
+
+set.seed(256)
+update_geom_defaults("label", list(family = "Fira Sans Condensed"))
+update_geom_defaults("text", list(family = "Fira Sans Condensed"))
+xaringanExtra::use_tile_view()
+xaringanExtra::use_tachyons()
+xaringanExtra::use_freezeframe()
+xaringanExtra::use_extra_styles(hover_code_line = TRUE)
+library(gganimate)
+library(broom)
+```
+
+class: inverse
+
+# Outline
+
+### [Difference-in-Difference Models](#3)
+### [Example I: HOPE in Georgia](#32)
+### [Generalizing DND Models](#74)
+### [Example II: "The" Card-Kreuger Minimum Wage Study](#88)
+
+---
+
+# Clever Research Designs Identify Causality
+
+Again, **this toolkit** of research designs to **identify causal effects** is the economist’s **comparative advantage** that firms and governments want!
+
+```{r, fig.retina=3, fig.align="center", fig.width=14}
+update_geom_defaults("text", list(family = "Fira Sans Condensed"))
+
+ggplot(data = tibble(x=c(0,10),
+                     y=c(0,10)))+
+  aes(x = x,
+      y = y)+
+  geom_text(x=1,y=0.75, label="Correlation", size =10, color = "#fde0dd")+
+  geom_text(x=5,y=0.75, label="Causation", size = 10, color = "#7a0177")+
+  
+  
+  geom_text(x=1,y=1.5, label="Differences", size =5, color = "#fde0dd")+
+  geom_text(x=1,y=1.25, label="Pre-Post", size =5, color = "#fde0dd")+
+  geom_text(x=2,y=1.75, label="Multiple Regression", size =5, color = "#fbb4b9")+
+  geom_text(x=2,y=1.25, label="Matching", size =5, color = "#fbb4b9")+
+    geom_text(x=3,y=2, label="Fixed Effects", size =5, color = "#f768a1")+
+    geom_text(x=3.5,y=2.25, label="Diff-in-Diff", size =5, color = "#c51b8a")+
+  geom_text(x=4,y=1.25, label="Natural Experiments", size =5, color = "#c51b8a")+
+  geom_text(x=3.5,y=1.5, label="Regression Discontinuity", size =5, color = "#c51b8a")+
+  geom_text(x=5,y=1.75, label="RCTs", size =5, color = "#7a0177")+
+  annotate("segment", x = 1, xend = 5, y = 1, yend = 1, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="last", type="closed"))+
+  scale_x_continuous(breaks=seq(0,6,1),
+                     limits=c(0,6))+
+  scale_y_continuous(breaks=seq(0,3,1),
+                     limits=c(0.5,2.3))+
+  theme_void(base_family="Fira Sans Condensed", base_size = 14)
+```
+
+---
+
+class: inverse, center, middle
+
+# Difference-in-Difference Models
+
+---
+
+# Natural Experiments
+
+.center[
+![](../images/federalismnaturalexperiements.png)
+]
+
+---
+
+# Difference-in-Difference Models I
+
+.pull-left[
+
+.smallest[
+- Often, we want to examine the consequences of a change, such as a law or policy intervention
+]
+]
+
+
+---
+
+# Difference-in-Difference Models I
+
+.pull-left[
+
+.smallest[
+- Often, we want to examine the consequences of a change, such as a law or policy intervention
+
+- .green[**Example**]: how do States that implement policy $X$ see changes in $Y$
+  - **Treatment**: States that implement $X$
+  - **Control**: States that did not implement $X$
+]
+
+]
+
+---
+
+# Difference-in-Difference Models I
+
+.pull-left[
+
+.smallest[
+- Often, we want to examine the consequences of a change, such as a law or policy intervention
+
+- .green[**Example**]: how do States that implement policy $X$ see changes in $Y$
+  - **Treatment**: States that implement $X$
+  - **Control**: States that did not implement $X$
+
+- If we have **panel data** with observations for all states **before** and **after** the change...
+    
+- Find the *difference* between treatment & control groups *in* their *differences* before and after the treatment period
+]
+]
+
+--
+
+.pull-right[
+.center[
+![](https://www.dropbox.com/s/vpk560fok07yo9t/dndhot.jpg?raw=1)
+]
+]
+
+---
+
+# Difference-in-Difference Models I
+
+.pull-left[
+
+.smallest[
+- Often, we want to examine the consequences of a change, such as a law or policy intervention
+
+- .green[**Example**]: how do States that implement policy $X$ see changes in $Y$
+  - **Treatment**: States that implement $X$
+  - **Control**: States that did not implement $X$
+
+- If we have **panel data** with observations for all states **before** *and* **after** the change...
+    
+- Find the *difference* between treatment & control groups *in* their *differences* before and after the treatment period
+]
+]
+
+.pull-right[
+```{r}
+library(ggdag)
+
+dagify(
+  Y ~ X + group + time,
+  X ~ group + time,
+  exposure = "X",
+  outcome = "Y",
+  coords = list(x = c(X = 1, Y = 3, group = 2, time = 2),
+                y = c(X = 1, Y = 1, group = 2, time = 0))) %>%
+  tidy_dagitty(seed = 2) %>%
+  ggdag_status()+
+  theme_dag()+
+  theme(legend.position = "none")
+```
+]
+
+---
+
+# Difference-in-Difference Models II
+
+.smallest[
+- The .hi[difference-in-difference model] (aka .hi[“diff-in-diff”] or .hi[“DND”]) identifies treatment effect by differencing the difference pre- and post-treatment values of $Y$ between treatment and control groups
+]
+
+--
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+--
+
+.quitesmall[
+- $Treated_i= \begin{cases}1 \text{ if } i \text{ is in treatment group}\\ 0 \text{ if } i \text{ is not in treatment group}\end{cases} \quad After_t= \begin{cases}1 \text{ if } t \text{ is after treatment period}\\ 0 \text{ if } t \text{ is before treatment period}\end{cases}$
+
+]
+
+--
+
+.smallest[
+|    | Control | Treatment | **Group Diff** $(\Delta Y_i)$ |
+|----|---------|-----------|---------------------------|
+| Before | $\beta_0$ | $\beta_0+\beta_1$ | $\beta_1$ |
+| After | $\beta_0+\beta_2$ | $\beta_0+\beta_1+\beta_2+\beta_3$ | $\beta_1+\beta_3$ |
+| **Time Diff** $(\Delta Y_t)$ | $\beta_2$ | $\beta_2+\beta_3$ | **Diff-in-diff** $\Delta_i \Delta_t: \beta_3$ |
+]
+
+---
+
+# Silly Example: Hot Dogs
+
+.pull-left[
+.center[
+![:scale 50%](../images/hotdogs-small.jpg)
+]
+
+.quitesmall[
+Is there a discount when you get cheese *and* chili?
+
+```{r, echo =F}
+hotdogs <- tribble(
+  ~price, ~cheese, ~chili,
+  2, 0, 0,
+  2.35, 1, 0,
+  2.35, 0, 1,
+  2.7, 1, 1
+)
+```
+
+```{r}
+hotdogs
+```
+
+]
+]
+
+--
+
+.pull-right[
+.smallest[
+```{r, echo = T, eval = F}
+lm(price ~ cheese + chili + cheese*chili,
+   data = hotdogs) %>%
+  tidy()
+```
+
+```{r, echo = F}
+lm(price ~ cheese + chili + cheese*chili,
+   data = hotdogs) %>%
+  tidy() %>%
+  select(term, estimate) %>%
+  mutate(estimate = round(estimate,2))
+```
+
+]
+]
+
+---
+
+# Silly Example: Hot Dogs
+
+.pull-left[
+.center[
+![:scale 50%](../images/hotdogs-small.jpg)
+]
+
+.quitesmall[
+Is there a discount when you get cheese *and* chili?
+
+|    | No Cheese | Cheese | **Cheese Diff**|
+|----|---------|-----------|---------------------------|
+| No Chili | $2.00 | $2.35 | $0.35 |
+| Chili | $2.35 | $2.70 | $0.35 |
+| **Chili Diff** | $0.35 | $0.35 |  $0.00 (**Diff-in-diff**) |
+]
+]
+
+.pull-right[
+.smallest[
+```{r, echo = T, eval = F}
+lm(price ~ cheese + chili + cheese*chili,
+   data = hotdogs) %>%
+  tidy()
+```
+
+
+```{r, echo = F}
+lm(price ~ cheese + chili + cheese*chili,
+   data = hotdogs) %>%
+  tidy() %>%
+  select(term, estimate) %>%
+  mutate(estimate = round(estimate,2))
+```
+
+]
+]
+
+--
+
+.smallest[
+- Diff-n-diff is just a model with an interaction term between two dummies!
+]
+
+---
+
+```{r}
+control<-tribble(
+  ~x, ~y,
+  1, 1,
+  2, 3
+)
+treatment<-tribble(
+  ~x, ~y,
+  1, 4,
+  2, 8
+)
+```
+
+
+# Visualizing Diff-in-Diff
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "red", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 2
+  geom_label(x=2.1,y=2, color = "red", label=expression(hat(beta)[2]))+
+
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+
+.smallest[
+- .red[Control group `\\((\text{Treated_i} = 0)\\)`]
+
+- .red[`\\(\hat{\beta_0}\\)`]: value of $Y$ for **control** group **before** treatment
+
+- .red[`\\(\hat{\beta_2}\\)`]: time *difference* (for **control** group)
+]
+
+]
+
+---
+
+# Visualizing Diff-in-Diff
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "red", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 2
+  geom_label(x=2.1,y=2, color = "red", label=expression(hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "green", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+    # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  # beta 2
+  geom_label(x=2.1,y=5, color = "red",label=expression(hat(beta)[2]))+
+
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+
+.smallest[
+- .red[Control group `\\((\text{Treated_i} = 0)\\)`]
+
+
+- .red[`\\(\hat{\beta_0}\\)`]: value of $Y$ for **control** group **before** treatment
+
+- .red[`\\(\hat{\beta_2}\\)`]: time *difference* (for **control** group)
+
+- .green[Treatment group `\\((\text{Treated}_i = 1)\\)`]
+
+
+]
+]
+---
+
+# Visualizing Diff-in-Diff
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "red", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 2
+  geom_label(x=2.1,y=2, color = "red", label=expression(hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "green", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+  
+  # beta 1 dif
+  geom_segment(x=1, y=1, xend=1, yend=4, color="black", linetype = "dashed", size = 1)+
+  geom_label(x=0.9,y=2.5, color = "black", label=expression(hat(beta)[1]))+
+
+    # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  # beta 2
+  geom_label(x=2.1,y=5, color = "red",label=expression(hat(beta)[2]))+
+
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+
+.smallest[
+- .red[Control group `\\((\text{Treated_i} = 0)\\)`]
+
+
+- .red[`\\(\hat{\beta_0}\\)`]: value of $Y$ for **control** group **before** treatment
+
+- .red[`\\(\hat{\beta_2}\\)`]: time *difference* (for **control** group)
+
+- .green[Treatment group `\\((\text{Treated}_i = 1)\\)`]
+
+- .green[`\\(\hat{\beta_1}\\)`]: *difference* between groups **before** treatment
+
+]
+]
+
+---
+
+# Visualizing Diff-in-Diff
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "red", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 2
+  geom_label(x=2.1,y=2, color = "red", label=expression(hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "green", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+  
+  # beta 1 dif
+  geom_segment(x=1, y=1, xend=1, yend=4, color="black", linetype = "dashed", size = 1)+
+  geom_label(x=0.9,y=2.5, color = "black", label=expression(hat(beta)[1]))+
+
+    # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  # beta 2
+  geom_label(x=2.1,y=5, color = "red",label=expression(hat(beta)[2]))+
+
+  # beta 3
+  geom_label(x=2.1,y=7, color = "blue", label=expression(hat(beta)[3]))+
+
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+.smallest[
+- .red[Control group `\\((\text{Treated_i} = 0)\\)`]
+
+
+- .red[`\\(\hat{\beta_0}\\)`]: value of $Y$ for **control** group **before** treatment
+
+- .red[`\\(\hat{\beta_2}\\)`]: time *difference* (for **control** group)
+
+- .green[Treatment group `\\((\text{Treated}_i = 1)\\)`]
+
+- .green[`\\(\hat{\beta_1}\\)`]: *difference* between groups **before** treatment
+
+- .blue[`\\(\hat{\beta_3}\\)`]: .hi-blue[difference-in-difference (treatment effect)]
+]
+]
+---
+
+# Visualizing Diff-in-Diff II
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+
+.smallest[
+- $\bar{Y_i}$ for **Control** group **before**: $\hat{\beta_0}$
+]
+
+]
+
+
+---
+
+# Visualizing Diff-in-Diff II
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 1+2
+  geom_label(x=2.2,y=3, color = "black", label=expression(hat(beta)[0]+hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+
+.smallest[
+- $\bar{Y_i}$ for **Control** group **before**: $\hat{\beta_0}$
+
+- $\bar{Y_i}$ for **Control** group **after**: $\hat{\beta_0}+\hat{\beta_2}$
+]
+]
+
+---
+
+# Visualizing Diff-in-Diff II
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 1+2
+  geom_label(x=2.2,y=3, color = "black", label=expression(hat(beta)[0]+hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "black", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+.smallest[
+- $\bar{Y_i}$ for **Control** group **before**: $\hat{\beta_0}$
+
+- $\bar{Y_i}$ for **Control** group **after**: $\hat{\beta_0}+\hat{\beta_2}$
+
+- $\bar{Y_i}$ for **Treatment** group **before**: $\hat{\beta_0}+\hat{\beta_1}$
+]
+]
+
+
+
+---
+
+# Visualizing Diff-in-Diff II
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 1+2
+  geom_label(x=2.2,y=3, color = "black", label=expression(hat(beta)[0]+hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "black", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  # beta 3
+  geom_label(x=2.25,y=8, color = "black",
+             label=expression(hat(beta)[0]+hat(beta)[1]+hat(beta)[2]+hat(beta)[3]))+
+
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+.smallest[
+- $\bar{Y_i}$ for **Control** group **before**: $\hat{\beta_0}$
+
+- $\bar{Y_i}$ for **Control** group **after**: $\hat{\beta_0}+\hat{\beta_2}$
+
+- $\bar{Y_i}$ for **Treatment** group **before**: $\hat{\beta_0}+\hat{\beta_1}$
+
+- $\bar{Y_i}$ for **Treatment** group **after**: $\hat{\beta_0}+\hat{\beta_1}+\hat{\beta_2}+\hat{\beta_3}$
+
+]
+]
+
+---
+
+# Visualizing Diff-in-Diff II
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 1+2
+  geom_label(x=2.2,y=3, color = "black", label=expression(hat(beta)[0]+hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "black", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  # beta 3
+  geom_label(x=2.25,y=8, color = "black",
+             label=expression(hat(beta)[0]+hat(beta)[1]+hat(beta)[2]+hat(beta)[3]))+
+
+  # beta 1 dif
+  annotate("segment", x = 1, xend = 1, y = 1, yend = 4, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=1,y=2.5, size = 5, color = "black", label=expression(hat(beta)[1]))+
+  
+    scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+.smallest[
+
+- $\bar{Y_i}$ for **Control** group **before**: $\hat{\beta_0}$
+
+- $\bar{Y_i}$ for **Control** group **after**: $\hat{\beta_0}+\hat{\beta_2}$
+
+- $\bar{Y_i}$ for **Treatment** group **before**: $\hat{\beta_0}+\hat{\beta_1}$
+
+- $\bar{Y_i}$ for **Treatment** group **after**: $\hat{\beta_0}+\hat{\beta_1}+\hat{\beta_2}+\hat{\beta_3}$
+
+- **Group Difference (before)**: $\hat{\beta_1}$
+]
+]
+
+
+---
+
+# Visualizing Diff-in-Diff II
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 1+2
+  geom_label(x=2.2,y=3, color = "black", label=expression(hat(beta)[0]+hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "black", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  # beta 3
+  geom_label(x=2.25,y=8, color = "black",
+             label=expression(hat(beta)[0]+hat(beta)[1]+hat(beta)[2]+hat(beta)[3]))+
+
+  # beta 1 dif
+  annotate("segment", x = 1, xend = 1, y = 1, yend = 4, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=1,y=2.5, size = 5, color = "black", label=expression(hat(beta)[1]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 1, yend = 3, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=2, size = 5, color = "black", label=expression(hat(beta)[2]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 4, yend = 6, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=5, size = 5, color = "black", label=expression(hat(beta)[2]))+
+  
+    scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+.smallest[
+- $\bar{Y_i}$ for **Control** group **before**: $\hat{\beta_0}$
+
+- $\bar{Y_i}$ for **Control** group **after**: $\hat{\beta_0}+\hat{\beta_2}$
+
+- $\bar{Y_i}$ for **Treatment** group **before**: $\hat{\beta_0}+\hat{\beta_1}$
+
+- $\bar{Y_i}$ for **Treatment** group **after**: $\hat{\beta_0}+\hat{\beta_1}+\hat{\beta_2}+\hat{\beta_3}$
+
+- **Group Difference (before)**: $\hat{\beta_1}$
+
+- **Time Difference**: $\hat{\beta_2}$
+
+]
+]
+
+---
+
+# Visualizing Diff-in-Diff II
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # beta 0 
+  geom_label(x=0.9,y=1, color = "black", label=expression(hat(beta)[0]))+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+  # beta 1+2
+  geom_label(x=2.2,y=3, color = "black", label=expression(hat(beta)[0]+hat(beta)[2]))+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # beta 0 plus beta 1 
+  geom_label(x=0.8,y=4, color = "black", label=expression(hat(beta)[0]+hat(beta)[1]))+
+  
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  # beta 3
+  geom_label(x=2.25,y=8, color = "black",
+             label=expression(hat(beta)[0]+hat(beta)[1]+hat(beta)[2]+hat(beta)[3]))+
+
+  # beta 1 dif
+  annotate("segment", x = 1, xend = 1, y = 1, yend = 4, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=1,y=2.5, size = 5, color = "black", label=expression(hat(beta)[1]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 1, yend = 3, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=2, size = 5, color = "black", label=expression(hat(beta)[2]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 4, yend = 6, colour = "black", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=5, size = 5, color = "black", label=expression(hat(beta)[2]))+
+  
+  # beta 2 dif
+  annotate("segment", x = 2, xend = 2, y = 6, yend = 8, colour = "blue", size=2, alpha=1, arrow=arrow(length=unit(0.5,"cm"), ends="both", type="closed"))+
+  geom_label(x=2,y=7, size = 5, color = "blue", label=expression(hat(beta)[3]))+
+
+    scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+.smallest[
+- $\bar{Y_i}$ for **Control** group **before**: $\hat{\beta_0}$
+
+- $\bar{Y_i}$ for **Control** group **after**: $\hat{\beta_0}+\hat{\beta_2}$
+
+- $\bar{Y_i}$ for **Treatment** group **before**: $\hat{\beta_0}+\hat{\beta_1}$
+
+- $\bar{Y_i}$ for **Treatment** group **after**: $\hat{\beta_0}+\hat{\beta_1}+\hat{\beta_2}+\hat{\beta_3}$
+
+- **Group Difference (before)**: $\hat{\beta_1}$
+
+- **Time Difference**: $\hat{\beta_2}$
+
+- .blue[**Difference-in-difference**: `\\(\hat{\beta_3}\\)` (treatment effect)]
+]
+]
+
+---
+
+# Comparing Group Means (Again)
+
+.smallest[
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+]
+
+
+|    | Control | Treatment | **Group Diff** $(\Delta Y_i)$ |
+|----|---------|-----------|---------------------------|
+| Before | $\beta_0$ | $\beta_0+\beta_1$ | $\beta_1$ |
+| After | $\beta_0+\beta_2$ | $\beta_0+\beta_1+\beta_2+\beta_3$ | $\beta_1+\beta_3$ |
+| **Time Diff** $(\Delta Y_t)$ | $\beta_2$ | $\beta_2+\beta_3$ | **Diff-in-diff** $\Delta_i \Delta_t: \beta_3$ |
+
+---
+
+# Key Assumption: Counterfactual
+
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=6, color="red", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=6, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+.smaller[
+- Key assumption for DND: **time trends** (for treatment and control) are **parallel**
+
+- Treatment and control groups assumed to be identical over time on average, **except for treatment**
+
+- .hi[Counterfactual]: if the treatment group had not recieved treatment, it would have changed identically over time as the control group $(\hat{\beta_2})$
+]
+]
+
+---
+
+# Key Assumption: Counterfactual
+
+$$\hat{Y_{it}}=\beta_0+\beta_1 \text{Treated}_i +\beta_2 \text{After}_{t}+\beta_3 (\text{Treated}_i \times \text{After}_{t})+u_{it}$$
+
+
+.pull-left[
+
+```{r, fig.height=6, fig.retina=3}
+ggplot(data = tibble(x=1,3))+
+  aes(x = x)+
+  # control
+  geom_point(data = control, aes(x=x,y=y), size = 3, color = "red")+
+  geom_text(x=1,y=0.5, color = "red", label=expression(C[1]))+
+  geom_text(x=2,y=3.5, color = "red", label=expression(C[2]))+
+  
+  # line
+  geom_segment(x=1, y=1, xend=2, yend=3, color="red", size = 2)+
+  
+  # line slope
+  geom_segment(x=1, y=1, xend=2, yend=1, color="red", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=1, xend=2, yend=3, color="red", linetype = "dotted", size = 1)+
+
+  # treatment
+  geom_point(data = treatment, aes(x=x,y=y), size = 3, color = "green")+
+  geom_text(x=1,y=4.5, color = "green", label=expression(T[1]))+
+  geom_text(x=2,y=8.5, color = "green", label=expression(T[2]))+
+  
+    # line
+  geom_segment(x=1, y=4, xend=2, yend=8, color="green", size = 2)+
+
+  # line slope
+  geom_segment(x=1, y=4, xend=2, yend=4, color="green", linetype = "dotted", size = 1)+
+  geom_segment(x=2, y=4, xend=2, yend=4.5, color="purple", linetype = "dotted", size = 1)+
+  
+  # diag
+  geom_segment(x=1, y=4, xend=2, yend=4.5, color="purple", linetype = "dotted", size = 1)+
+
+  geom_segment(x=2, y=4.5, xend=2, yend=8, color="blue", linetype = "dashed", size = 1)+
+  
+  scale_x_continuous(breaks=c(1,2),
+                  labels=c(expression(t[before]),expression(t[after])),
+                  limits=c(0.5,2.5))+
+  scale_y_continuous(breaks=NULL,
+                     limits=c(0,9))+
+  labs(x = "Time",
+       y = "Y")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=20)
+```
+]
+
+.pull-right[
+
+- If the time-trends would have been *different*, a **biased** measure of the treatment effect $(\hat{\beta_3})$!
+
+]
+
+---
+
+class: inverse, center, middle
+
+# Example I: HOPE in Georgia
+
+---
+
+# Diff-in-Diff Example I
+
+.content-box-green[
+.smallest[
+.green[**Example**]: In 1993 Georgia initiated a HOPE scholarship program to let state residents with at least a B average in high school attend public college in Georgia for free. Did it increase college enrollment?
+]
+]
+
+.smallest[
+- Micro-level data on 4,291 young individuals
+]
+
+--
+
+.smallest[
+- $\text{InCollege}_{it}=\begin{cases}1 \text{ if } i \text{ is in college during year }t\\ 0 \text{ if } i \text{ is not in college during year }t\\ \end{cases}$
+]
+
+--
+
+.smallest[
+- $\text{Georgia}_i=\begin{cases}1 \text{ if } i \text{ is a Georgia resident}\\ 0 \text{ if } i \text{ is not a Georgia resident}\\ \end{cases}$
+]
+
+--
+
+.smallest[
+- $\text{After}_t=\begin{cases}1 \text{ if } t \text{ is after 1992}\\ 0 \text{ if } t \text{ is after 1992}\\ \end{cases}$
+]
+
+.source[Dynarski, Susan, 1999, “Hope for Whom? Financial Aid for the Middle Class and its Impact on College Attendance,” *National Tax Journal* 53(3): 629-661]
+
+.tiny[Note: With a dummy *dependent* (Y) variable, coefficients estimate the probability `\\(Y=1\\)`, i.e. the *probability* a person is enrolled in college]
+
+---
+
+# Diff-in-Diff Example II
+
+- We can use a DND model to measure the effect of HOPE scholarship on enrollments
+
+- Georgia and nearby States, if not for HOPE, changes should be the same over time
+
+--
+
+- Treatment period: after 1992
+
+--
+
+- Treatment: Georgia
+
+--
+
+- Differences-in-differences: $$\Delta_i \Delta_t Enrolled = (\text{GA}_{after}-\text{GA}_{before})-(\text{neighbors}_{after}-\text{neighbors}_{before})$$
+
+--
+
+- Regression equation:
+$$\widehat{\text{Enrolled}_{it}} = \beta_0+\beta_1 \, \text{Georgia}_{i}+\beta_2 \,  \text{After}_{t}+\beta_3 \, (\text{Georgia}_{i} \times \text{After}_{t})$$
+
+---
+
+# Example: Data
+
+```{r}
+hope <- read_csv("https://metricsf21.classes.ryansafner.com/data/HOPE.csv")
+hope <- hope %>%
+  mutate_at(c("StateCode", "Year"),factor)
+```
+
+.smallest[
+```{r}
+hope
+```
+]
+
+---
+
+# Example: Data
+
+.pull-left[
+
+```{r}
+dagify(
+  Enroll ~ HOPE + GA + After,
+  HOPE ~ GA + After,
+  exposure = "HOPE",
+  outcome = "Enroll",
+  coords = list(x = c(HOPE = 1, Enroll = 3, GA = 2, After = 2),
+                y = c(HOPE = 1, Enroll = 1, GA = 2, After = 0))) %>%
+  tidy_dagitty(seed = 2) %>%
+  ggdag_status()+
+  theme_dag()+
+  theme(legend.position = "none")
+
+```
+
+]
+
+.pull-right[
+.center[
+![](../images/dynarski_hope.png)
+]
+]
+
+.source[Dynarski, Susan, 1999, “Hope for Whom? Financial Aid for the Middle Class and its Impact on College Attendance,” *National Tax Journal* 53(3): 629-661]
+
+---
+
+# Example: Regression
+
+
+.smallest[
+```{r, echo=T}
+DND_reg <- lm(InCollege ~ Georgia + After + Georgia*After, data = hope)
+DND_reg %>% tidy()
+```
+]
+
+--
+.smallest[
+$$\widehat{\text{Enrolled}_{it}}=0.406-0.105 \, \text{Georgia}_{i}-0.004 \, \text{After}_{t}+0.089 \, (\text{Georgia}_{i} \times \text{After}_{t})$$
+]
+
+---
+
+# Example: Interpretting the Regression
+
+$$\widehat{\text{Enrolled}_{it}}=0.406-0.105 \, \text{Georgia}_{i}-0.004 \, \text{After}_{t}+0.089 \, (\text{Georgia}_{i} \times \text{After}_{t})$$
+
+--
+
+- $\beta_0$: 
+--
+A **non-Georgian** **before** 1992 was 40.6% likely to be a college student
+
+--
+
+- $\beta_1$: 
+--
+**Georgians** **before** 1992 were 10.5% less likely to be college students than neighboring states
+
+--
+
+- $\beta_2$: 
+--
+**After** 1992, **non-Georgians** are 0.4% less likely to be college students
+
+--
+
+- $\beta_3$: 
+--
+**After** 1992, **Georgians** are 8.9% more likely to enroll in colleges than neighboring states
+
+--
+
+- .hi-purple[Treatment effect: HOPE increased enrollment likelihood by 8.9%]
+
+---
+
+# Example: Comparing Group Means
+
+$$\widehat{\text{Enrolled}_{it}}=0.406-0.105 \, \text{Georgia}_{i}-0.004 \, \text{After}_{t}+0.089 \, (\text{Georgia}_{i} \times \text{After}_{t})$$
+
+- A group mean for a dummy $Y$ is $E[Y=1]$, i.e. the probability a student is enrolled:
+
+- **Non-Georgian enrollment probability pre-1992**: 
+--
+$\beta_0=0.406$
+
+--
+- **Georgian enrollment probability pre-1992**: 
+--
+$\beta_0+\beta_1=0.406-0.105=0.301$
+
+--
+
+- **Non-Georgian enrollment probability post-1992**: 
+--
+$\beta_0+\beta_2=0.406-0.004=0.402$
+
+--
+
+- **Georgian enrollment probability post-1992**: 
+--
+$\beta_0+\beta_1+\beta_2+\beta_3=0.406-0.105-0.004+0.089=0.386$
+
+---
+
+# Example: Comparing Group Means in R
+
+.pull-left[
+```{r, echo=T}
+# group mean for non-Georgian before 1992
+hope %>%
+  filter(Georgia == 0,
+         After == 0) %>%
+  summarize(prob = mean(InCollege))
+
+```
+]
+
+--
+
+.pull-right[
+```{r, echo=T}
+# group mean for non-Georgian AFTER 1992
+hope %>%
+  filter(Georgia == 0,
+         After == 1) %>%
+  summarize(prob = mean(InCollege))
+
+```
+]
+
+---
+
+# Example: Comparing Group Means in R II
+
+.pull-left[
+```{r, echo=T}
+# group mean for Georgian before 1992
+hope %>%
+  filter(Georgia == 1,
+         After == 0) %>%
+  summarize(prob = mean(InCollege))
+```
+]
+
+--
+
+.pull-right[
+```{r, echo=T}
+# group mean for Georgian AFTER 1992
+hope %>%
+  filter(Georgia == 1,
+         After == 1) %>%
+  summarize(prob = mean(InCollege))
+```
+]
+
+---
+
+# Example: Diff-in-Diff Summary
+
+$$\widehat{\text{Enrolled}_{it}}=0.406-0.105 \, \text{Georgia}_{i}-0.004 \, \text{After}_{t}+0.089 \, (\text{Georgia}_{i} \times \text{After}_{t})$$
+
+|    | Neighbors | Georgia | **Group Diff** $(\Delta Y_i)$ |
+|----|--------:|----------:|--------------------------:|
+| Before | $0.406$ | $0.301$ | $-0.105$ |
+| After | $0.402$ | $0.386$ | $0.016$ |
+| **Time Diff** $(\Delta Y_t)$ | $-0.004$ | $0.085$ | **Diff-in-diff**: $0.089$ |
+
+--
+
+$$\begin{align*}
+	\Delta_i \Delta_t Enrolled &= (\text{GA}_{after}-\text{GA}_{before})-(\text{neighbors}_{after}-\text{neighbors}_{before})\\
+	&=(0.386-0.301)-(0.402-0.406)\\
+	&=(0.085)-(-0.004)\\
+	&=0.089\\ \end{align*}$$
+
+---
+
+# Diff-in-Diff Summary & Data
+
+.center[
+![](../images/dynarski_hope_1.png)
+]
+
+.source[Dynarski, Susan, 1999, “Hope for Whom? Financial Aid for the Middle Class and its Impact on College Attendance,” *National Tax Journal* 53(3): 629-661]
+
+---
+
+# Example: Diff-in-Diff Graph
+
+```{r, fig.retina=3, fig.align="center", fig.width=16}
+plot<-hope %>%
+  ggplot(data=.)+
+  aes(x = After,
+      y = InCollege,
+      color = factor(Georgia))+
+  geom_smooth(method="lm", se=FALSE, size = 2)+
+  #scale_y_continuous(breaks=seq(0,1,0.125), limits=c(0,0.05))+
+  #geom_abline(intercept = 0.301, slope = -0.004, linetype = "dashed", color = "gray",
+  #            xlim = c(0,1))+
+  scale_x_continuous(breaks=seq(0,1,1), labels=c("Before", "After"))+
+scale_color_manual(name = "State",
+                   labels = c("Neighbors", "Georgia"), values = c("blue", "red"))+
+  labs(x = "Before or After HOPE",
+       y = "Probability of Being Enrolled in College")+
+  theme_classic(base_family = "Fira Sans Condensed",
+           base_size=16)+
+  #scale_y_continuous(limits = c(0.2,0.6),
+  #                   expand = c(0,0))+
+  theme(legend.position = "top")
+plot
+```
+
+---
+
+# Example: Diff-in-Diff Graph (& Counterfactual)
+
+```{r, fig.retina=3, fig.align="center", fig.width=16}
+plot+ geom_segment(x = 0, xend = 1, y = 0.301, yend = 0.297, linetype = "dashed", color = "gray", size = 2)
+
+```
+
+---
+
+class: inverse, center, middle
+
+# Generalizing DND Models
+
+---
+
+# Generalizing DND Models
+
+- DND can be **generalized** with a **two-way fixed effects** model:  	
+$$\widehat{Y_{it}}=\beta_1 (\text{Treated}_i \times \text{After}_{t})+\alpha_i+\theta_t++\nu_{it}$$
+    - $\alpha_i$: **group fixed effects** (treatments/control groups)
+    - $\theta_t$: **time fixed effects** (pre/post treatment)
+    - $\beta_1$: diff-in-diff (interaction effect, $\beta_3$ from before)
+
+--
+
+- Flexibility: *many* periods (not just before/after), *many* different treatment(s)/groups, and treatment(s) can occur at different times to different units (so long as some do not get treated)
+
+--
+
+- Can also add control variables that vary within units and over time 
+$$\widehat{Y_{it}}=\beta_1 \, (\text{Treated}_i \times \text{After}_{t})+\beta_2 X_{it}+\cdots + \alpha_i+\theta_t+\nu_{it}$$
+
+---
+
+# Our Example, Generalized I
+
+$$\widehat{\text{Enrolled}_{it}} = \beta_1 \, (\text{Georgia}_{i} \times \text{After}_{t}) + \alpha_i+\theta_t+$$
+
+- `StateCode` is a variable for the State $\implies$ create State fixed effect
+
+- `Year` is a variable for the year $\implies$ create year fixed effect
+
+---
+
+# Our Example, Generalized II
+
+.pull-left[
+.smallest[
+- Using LSDV method...
+]
+.tiny[
+.code70[
+```{r dnd-gen-reg, echo=T}
+DND_fe <- lm(InCollege ~ Georgia*After + factor(StateCode) + factor(Year),
+           data = hope)
+DND_fe %>% tidy()
+```
+]
+]
+]
+
+--
+
+.pull-right[
+.smallest[
+- By de-meaning data, using `fixest`
+]
+.tiny[
+.code70[
+```{r dnd-gen-reg-fixest, echo=T}
+library(fixest)
+DND_fe_2 <- feols(InCollege ~ Georgia*After | factor(StateCode) + factor(Year),
+           data = hope)
+DND_fe_2 %>% tidy()
+```
+]
+]
+]
+
+--
+
+.smallest[
+$$\widehat{\text{InCollege}_{it}}=0.091 \, (\text{Georgia}_i \times \text{After}_{it})+\alpha_i+\theta_t$$
+
+]
+
+---
+
+# Our Example, Generalized, with Controls II
+
+.pull-left[
+.smallest[
+- Using LSDV method...
+]
+.tiny[
+.code70[
+```{r dnd-gen-reg-controls, echo=T}
+DND_fe_controls <- lm(InCollege ~ Georgia*After + factor(StateCode) + factor(Year) + Black + LowIncome,
+           data = hope)
+DND_fe_controls %>% tidy()
+```
+]
+]
+]
+
+--
+
+.pull-right[
+.smallest[
+- By de-meaning data, using `fixest`
+]
+.tiny[
+.code70[
+```{r dnd-gen-reg-controls-fixest, echo=T}
+library(fixest)
+DND_fe_controls_2 <- feols(InCollege ~ Georgia*After + Black + LowIncome | factor(StateCode) + factor(Year),
+           data = hope)
+DND_fe_controls_2 %>% tidy()
+```
+
+]
+]
+]
+
+--
+.smallest[
+$$\widehat{\text{InCollege}_{it}}=0.023 \, (\text{Georgia}_i \times \text{After}_{it})-0.094 \text{Black}_{it}-0.302 \text{LowIncome}_{it}$$
+
+]
+
+---
+
+# Our Example, Generalized, with Controls II
+
+.font40[
+.regtable[
+```{r, echo = F}
+huxtable::huxreg(DND_reg,
+                 DND_fe_2,
+                 DND_fe_controls_2,
+                 coefs = c("Intercept" = "(Intercept)",
+                 "Georgia" = "Georgia",
+                 "After" = "After",
+                 "Georgia x After" = "Georgia:After",
+                 "Low Income" = "LowIncome",
+                 "Black" = "Black"),
+       statistics = c("N" = "nobs",
+                      "R-Squared" = "r.squared",
+                      "SER" = "sigma"),
+       number_format = 4) %>%
+  huxtable::add_rows(c("Fixed Effects", "None", "State & Year", "State & Year"), # add fixed effects row
+         after = 13) # insert after 6th row
+```
+]
+]
+
+---
+
+# Our Example, Generalized, with Controls II
+
+.center[
+![:scale 60%](../images/dynarski_hope_2.png)
+]
+
+.source[Dynarski, Susan, 1999, “Hope for Whom? Financial Aid for the Middle Class and its Impact on College Attendance,” *National Tax Journal* 53(3): 629-661]
+---
+
+# Intuition behind DND
+
+.pull-left[
+
+- Diff-in-diff models are the quintessential example of exploiting .hi[natural experiments]
+
+- A major change at a point in time (change in law, a natural disaster, political crisis) separates groups where one is affected and another is not---identifies the effect of the change (treatment) 
+
+- One of the cleanest and clearest causal **identification strategies**
+
+]
+
+.pull-right[
+.center[
+![](../images/legalmarijuanamap.png)
+]
+]
+
+---
+
+class: inverse, center, middle
+
+# Example II: “The” Card-Kreuger Minimum Wage Study
+
+---
+
+# Example: ”The” Card-Kreuger Minimum Wage Study I
+
+.content-box-green[
+.green[**Example**]: *The* controversial minimum wage study, Card & Kreuger (1994) is a quintessential (and clever) diff-in-diff.
+]
+
+.source[Card, David, Krueger, Alan B, (1994), "Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania," *American Economic Review* 84 (4): 772–793	]
+
+---
+
+# Card & Kreuger (1994): Background I
+
+.pull-left[
+- Card & Kreuger (1994)	compare employment in fast food restaurants on New Jersey and Pennsylvania sides of border between February and November 1992.
+
+- Pennsylvania & New Jersey both had a minimum wage of $4.25 before February 1992
+
+- In February 1992, New Jersey raised minimum wage from $4.25 to $5.05
+]
+
+.pull-right[
+.center[
+![](../images/panj.png)
+]
+]
+
+---
+
+# Card & Kreuger (1994): Background II
+
+.pull-left[
+- If we look only at New Jersey before & after change: 
+  - **Omitted variable bias**: macroeconomic variables (there's a recession!), weather, etc.
+	- Including PA as a control will control for these time-varying effects if they are national trends
+
+- Surveyed 400 fast food restaurants on each side of the border, before & after min wage increase
+  - .hi-purple[Key assumption]: Pennsylvania and New Jersey follow parallel trends, 
+	- **Counterfactual**: if not for the minimum wage increase, NJ employment would have changed similar to PA employment
+]
+
+.pull-right[
+.center[
+![](../images/panj.png)
+]
+]
+
+---
+
+# Card & Kreuger (1994): Comparisons
+
+.center[
+![:scale 25%](../images/CardKreuger1.png)
+]
+
+---
+
+# Card & Kreuger (1994): Summary I
+
+.center[
+![:scale 65%](../images/CardKreuger2.png)
+]
+
+---
+
+# Card & Kreuger (1994): Summary II
+
+.center[
+![:scale 65%](../images/CardKreuger3.png)
+]
+
+---
+
+# Card & Kreuger (1994): Model 
+
+.smallest[
+$$\widehat{\text{Employment}_{i t}}=\beta_0+\beta_1 \, \text{NJ}_{i}+\beta_2 \, \text{After}_{t}+\beta_3 \, (\text{NJ}_i \times After_t)$$
+
+- PA Before: $\beta_0$
+
+- PA After: $\beta_0+\beta_2$
+
+- NJ Before: $\beta_0+\beta_1$
+
+- NJ After: $\beta_0+\beta_1+\beta_2+\beta_3$
+
+- **Diff-in-diff**: $(\text{NJ}_{after}-\text{NJ}_{before})-(\text{PA}_{after}-\text{PA}_{before})$
+]
+
+--
+
+.smallest[
+|    | PA | NJ | **Group Diff** $(\Delta Y_i)$ |
+|----|---------|-----------|---------------------------|
+| Before | $\beta_0$ | $\beta_0+\beta_1$ | $\beta_1$ |
+| After | $\beta_0+\beta_2$ | $\beta_0+\beta_1+\beta_2+\beta_3$ | $\beta_1+\beta_3$ |
+| **Time Diff** $(\Delta Y_t)$ | $\beta_2$ | $\beta_2+\beta_3$ | **Diff-in-diff** $\Delta_i \Delta_t: \beta_3$ |
+]
+
+---
+
+# Card & Kreuger (1994): Results
+
+.center[
+![:scale 65%](../images/CardKreuger5.png)
+]

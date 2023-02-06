@@ -1,32 +1,153 @@
 /*-- scss:defaults --*/
-  $theme-darkblue: #01364C;
-  $theme-blue: #99D9DD;
-  $theme-white: #F7F8F9;
-  $theme-yellow: #F4BA02;
-  
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+// fonts
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://use.typekit.net/iyt8rru.css");
 
-$body-bg: $theme-darkblue;
-$body-color: $theme-white;
-$link-color: $theme-blue;
-$presentation-heading-color: lighten($theme-blue, 15%);
+$font-family-sans-serif:      Fira Sans Condensed, sans-serif !default;
+$font-family-serif:           Fira Sans Condensed, serif !default;
+/*$font-family-monospace:       Fira Mono !default; */
 
-$font-family-sans-serif: 'Manrope', sans-serif;
-$presentation-heading-font: 'IBM Plex Serif', serif;
-$presentation-title-slide-text-align: left;
+$presentation-heading-color: #314f4f;
+$presentation-title-slide-text-align: "left";
+$link-color: #e64173;
+$code-block-font-size: 0.6em;
+$code-block-bg: #f8f8f8;
+$code-block-border-color: #000000;
+
 /*-- scss:rules --*/
-  
-  .blue {
-    color: $theme-blue;
-    font-weight: bold;
-  }
-  
-.yellow {
-  color: $theme-yellow;
+
+/* Set background for all headers 1 # slides <- got rid of to make pdfs white background
+.slide-background:first-child {
+  background-color: #314f4f;
+  /*background-image: url(image.jpg); 
+}*/ 
+
+
+.reveal .centered {
+  text-align: center;
+}
+
+.reveal .source {
+  font-size: 50%;
+  color: gray;
+  line-height: 1;
+  float: bottom;
+}
+
+.reveal .bottom{
+  border-top:solid black 2px;
+  display:inline-block;
+  clear:left;
+}
+
+.reveal .hi {
+  font-weight: bold;
+  color: #e64173;
+}
+
+.reveal .hi-purple {
+  font-weight: bold;
+  color: #6A5ACD;
+}
+
+.reveal .pink {
+  color: #e64173;
+}
+
+.reveal .purple {
+  color: #6A5ACD;
+}
+
+.reveal .slate {
+  color: #314f4f;
+}
+
+.reveal .hi-turquoise {
+  font-weight: bold;
+  color: #44C1C4;
+}
+
+.reveal .hi-slate {
+  font-weight: bold;
+  color: #314f4f;
+}
+
+.reveal .hi-orange {
+  font-weight: bold;
+  color: #FFA500;
+}
+
+.reveal .orange {
+  color: #FFA500;
+}
+
+.reveal .red {
+  color: #D7250E;
+}
+
+.reveal .hi-red {
+  color: #D7250E;
   font-weight: bold;
 }
 
-.reveal .slide a {
-  text-decoration: underline;
+
+.reveal .hi-blue {
+  color: #0047AB;
+  font-weight: bold;
+}
+
+.reveal .hi-green {
+  color: #047806;
+  font-weight: bold;
+}
+
+.reveal .blue {
+  color: #0047AB;
+}
+
+.reveal .green {
+  color: #047806;
+}
+.reveal .custom-title {
+  font-size: 1.9em;
+  font-weight: bold;
+  position: absolute; 
+  left: 20px; 
+  top: 300px;
+  color: #FFFFFF;
+}
+
+.reveal .custom-subtitle {
+  font-size: 1.5em;
+  font-weight: bold;
+  position: absolute; 
+  left: 20px; 
+  top: 400px;
+  color: #FFFFFF;
+
+}
+
+.reveal .custom-author {
+  font-size: 1em;
+  position: absolute; 
+  left: 20px; 
+  top: 475px;
+  color: #FFFFFF;
+}
+
+.reveal .custom-institution {
+  font-size: 0.75em;
+  position: absolute; 
+  left: 20px; 
+  top: 590px;
+  color: #FFFFFF;
+
+}
+
+.reveal .b{
+  font-weight: 600;
+}
+
+.reveal .center{
+  text-align: center;
 }

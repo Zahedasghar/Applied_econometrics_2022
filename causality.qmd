@@ -1,0 +1,958 @@
+---
+title: "Causality"
+title-block-banner: true
+format: 
+  html :
+    freeze : auto
+editor: visual
+---
+
+```{dot}
+//| label: fig-dot-educationasconfounder
+//| fig-cap: "Education is a confounder that affects the relationship between income and happiness"
+//| echo: true
+//| fig-width: 2
+digraph D {
+  
+  node [shape=plaintext, fontname = "helvetica"];
+  
+  a [label = "Income"];
+  b [label = "Happiness"];
+  c [label = "Education"];
+  
+  { rank=same a b};
+  
+  a->b;
+  c->{a, b};
+}
+```
+
+### 
+
+```{dot}
+digraph D {
+
+  node [shape=plaintext, fontname = "helvetica"];
+  
+  a [label = "Income"];
+  b [label = "Happiness"];
+  c [label = "Exercise"];
+  
+  { rank=same a b};
+  
+  a->{b c};
+  b->c;
+}
+
+```
+
+```{r}
+library(tidyverse)
+
+set.seed(853)
+
+number_in_each <- 1000
+
+department_one <-
+  tibble(
+    undergrad = runif(n = number_in_each, min = 0.7, max = 0.9),
+    noise = rnorm(n = number_in_each, 0, sd = 0.1),
+    grad = undergrad + noise,
+    type = "Department 1"
+  )
+
+department_two <-
+  tibble(
+    undergrad = runif(n = number_in_each, min = 0.6, max = 0.8),
+    noise = rnorm(n = number_in_each, 0, sd = 0.1),
+    grad = undergrad + noise + 0.3,
+    type = "Department 2"
+  )
+
+both_departments <- rbind(department_one, department_two)
+
+both_departments
+```
+
+## 
+
+```{r}
+both_departments |>
+  ggplot(aes(x = undergrad, y = grad)) +
+  geom_point(aes(color = type), alpha = 0.1) +
+  geom_smooth(aes(color = type), method = "lm", formula = "y ~ x") +
+  geom_smooth(
+    method = "lm",
+    formula = "y ~ x",
+    color = "black"
+  ) +
+  labs(
+    x = "Undergraduate results",
+    y = "Graduate results",
+    color = "Department"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+
+```
+
+## 
+
+```{r}
+library(palmerpenguins)
+
+penguins |>
+  ggplot(aes(x = body_mass_g, y = bill_depth_mm)) +
+  geom_point(aes(color = species), alpha = 0.1) +
+  geom_smooth(aes(color = species), method = "lm", formula = "y ~ x") +
+  geom_smooth(
+    method = "lm",
+    formula = "y ~ x",
+    color = "black"
+  ) +
+  labs(
+    x = "Body mass (grams)",
+    y = "Bill depth (millimeters)",
+    color = "Species"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+
+```
+
+## Berkson's paradox
+
+```{r}
+set.seed(853)
+
+number_of_pros <- 100
+
+number_of_public <- 1000
+
+professionals <-
+  tibble(
+    VO2 = runif(n = number_of_pros, min = 0.7, max = 0.9),
+    chance_of_winning = runif(n = number_of_pros, min = 0.7, max = 0.9),
+    type = "Professionals"
+  )
+
+general_public <-
+  tibble(
+    VO2 = runif(n = number_of_public, min = 0.6, max = 0.8),
+    noise = rnorm(n = number_of_public, 0, sd = 0.03),
+    chance_of_winning = VO2 + noise + 0.1,
+    type = "Public"
+  ) |>
+  select(-noise)
+
+professionals_and_public <- rbind(professionals, general_public)
+
+professionals_and_public
+
+```
+
+## 
+
+```{r}
+professionals_and_public |>
+  ggplot(aes(x = VO2, y = chance_of_winning)) +
+  geom_point(aes(color = type), alpha = 0.1) +
+  geom_smooth(aes(color = type), method = "lm", formula = "y ~ x") +
+  geom_smooth(method = "lm", formula = "y ~ x", color = "black") +
+  labs(
+    x = "VO2 max",
+    y = "Chance of winning a bike race",
+    color = "Type"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+```
+
+## DID
+
+```{r}
+set.seed(853)
+
+simulated_diff_in_diff <-
+  tibble(
+    person = rep(c(1:1000), times = 2),
+    time = c(rep(0, times = 1000), rep(1, times = 1000)),
+    treatment_group = rep(
+      sample(
+        x = 0:1,
+        size = 1000,
+        replace = TRUE
+      ),
+      times = 2
+    )
+  ) |>
+  mutate(
+    treatment_group = as.factor(treatment_group),
+    time = as.factor(time)
+  )
+
+simulated_diff_in_diff <-
+  simulated_diff_in_diff |>
+  rowwise() |>
+  mutate(
+    serve_speed = case_when(
+      time == 0 & treatment_group == 0 ~ rnorm(n = 1, mean = 5, sd = 1),
+      time == 1 & treatment_group == 0 ~ rnorm(n = 1, mean = 6, sd = 1),
+      time == 0 & treatment_group == 1 ~ rnorm(n = 1, mean = 8, sd = 1),
+      time == 1 & treatment_group == 1 ~ rnorm(n = 1, mean = 14, sd = 1)
+    )
+  )
+
+simulated_diff_in_diff
+
+```
+
+```{r}
+simulated_diff_in_diff |>
+  ggplot(aes(
+    x = time,
+    y = serve_speed,
+    color = treatment_group
+  )) +
+  geom_point(alpha = 0.2) +
+  geom_line(aes(group = person), alpha = 0.1) +
+  theme_minimal() +
+  labs(
+    x = "Time period",
+    y = "Serve speed",
+    color = "Person got a new racket"
+  ) +
+  scale_color_brewer(palette = "Set1") +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+average_differences <-
+  simulated_diff_in_diff |>
+  pivot_wider(
+    names_from = time,
+    values_from = serve_speed,
+    names_prefix = "time_"
+  ) |>
+  mutate(difference = time_1 - time_0) |>
+  group_by(treatment_group) |>
+  # Average difference between old racket and new racket serve speed,
+  # within groups (pro and amateur)
+  summarize(average_difference = mean(difference))
+
+# Difference between the average differences of each group
+average_differences$average_difference[2] - average_differences$average_difference[1]
+```
+
+```{r}
+library(modelsummary)
+library(rstanarm)
+
+diff_in_diff_example_regression <-
+  stan_glm(
+    formula = serve_speed ~ treatment_group * time,
+    data = simulated_diff_in_diff,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 853
+  )
+
+saveRDS(
+  diff_in_diff_example_regression,
+  file = "diff_in_diff_example_regression.rds"
+)
+```
+
+```{r}
+diff_in_diff_example_regression <-
+  readRDS(file = "diff_in_diff_example_regression.rds")
+
+
+modelsummary(
+  diff_in_diff_example_regression,
+  statistic = "conf.int"
+)
+
+```
+
+## French newspaper prices between 1960 and 1974
+
+```{r}
+library(haven)
+
+newspapers <- read_dta("Angelucci_Cage_AEJMicro_dataset.dta")
+
+newspapers
+
+```
+
+```{r}
+newspapers <-
+  newspapers |>
+  select(
+    year,
+    id_news,
+    after_national,
+    local,
+    national, # Diff in diff variables
+    ra_cst,
+    ads_p4_cst,
+    ads_s, # Advertising side dependents
+    ps_cst,
+    po_cst,
+    qtotal,
+    qs_s,
+    rs_cst
+  ) |> # Reader side dependents
+  mutate(ra_cst_div_qtotal = ra_cst / qtotal) |>
+  mutate(across(c(id_news, after_national, local, national), as.factor)) |>
+  mutate(year = as.integer(year))
+
+newspapers
+```
+
+```{r}
+library(scales)
+
+newspapers |>
+  mutate(type = if_else(local == 1, "Local", "National")) |>
+  ggplot(aes(x = year, y = ra_cst)) +
+  geom_point(alpha = 0.5) +
+  scale_y_continuous(
+    labels = dollar_format(
+      prefix = "$",
+      suffix = "M",
+      scale = 0.000001
+    )
+  ) +
+  labs(
+    x = "Year",
+    y = "Advertising revenue"
+  ) +
+  facet_wrap(
+    vars(type),
+    nrow = 2
+  ) +
+  theme_minimal() +
+  geom_vline(xintercept = 1966.5, linetype = "dashed")
+
+```
+
+```{r}
+library(modelsummary)
+library(rstanarm)
+
+ad_revenue <-
+  stan_glm(
+    formula = log(ra_cst) ~ after_national + id_news + year,
+    data = newspapers,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 853
+  )
+
+saveRDS(
+  ad_revenue,
+  file = "ad_revenue.rds"
+)
+
+ad_revenue_div_circulation <-
+  stan_glm(
+    formula = log(ra_cst_div_qtotal) ~ after_national + id_news + year,
+    data = newspapers,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 853
+  )
+
+saveRDS(
+  ad_revenue_div_circulation,
+  file = "ad_revenue_div_circulation.rds"
+)
+
+# Consumer side
+subscription_price <-
+  stan_glm(
+    formula = log(ps_cst) ~ after_national + id_news + year,
+    data = newspapers,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 853
+  )
+
+saveRDS(
+  subscription_price,
+  file = "subscription_price.rds"
+)
+
+unit_price <-
+  stan_glm(
+    formula = log(po_cst) ~ after_national + id_news + year,
+    data = newspapers,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 853
+  )
+
+saveRDS(
+  unit_price,
+  file = "unit_price.rds"
+)
+
+```
+
+## 
+
+```{r}
+ad_revenue <-
+  readRDS(file = "ad_revenue.rds")
+
+ad_revenue_div_circulation <-
+  readRDS(file = "ad_revenue_div_circulation.rds")
+
+subscription_price <-
+  readRDS(file = "subscription_price.rds")
+
+unit_price <-
+  readRDS(file = "unit_price.rds")
+
+```
+
+```{r}
+selected_variables <-
+  c(
+    "year" = "Year",
+    "after_national1" = "After change"
+  )
+
+modelsummary(
+  models = list(
+    "Ad revenue" = ad_revenue,
+    "Ad revenue over circulation" = ad_revenue_div_circulation,
+    "Subscription price" = subscription_price
+  ),
+  fmt = 2,
+  coef_map = selected_variables,
+  statistic = "conf.int"
+)
+
+```
+
+## 14.5 Propensity Score Matching
+
+```{r}
+set.seed(853)
+
+sample_size <- 10000
+
+purchase_data <-
+  tibble(
+    unique_person_id = c(1:sample_size),
+    age = runif(
+      n = sample_size,
+      min = 18,
+      max = 100
+    ),
+    city = sample(
+      x = c("Toronto", "Montreal", "Calgary"),
+      size = sample_size,
+      replace = TRUE
+    ),
+    gender = sample(
+      x = c("Female", "Male", "Other/decline"),
+      size = sample_size,
+      replace = TRUE,
+      prob = c(0.49, 0.47, 0.02)
+    ),
+    income = rlnorm(
+      n = sample_size,
+      meanlog = 0.5,
+      sdlog = 1
+    )
+  )
+
+purchase_data
+```
+
+```{r}
+purchase_data <-
+  purchase_data |>
+  mutate(
+    age_num = case_when(
+      age < 30 ~ 3,
+      age < 50 ~ 2,
+      age < 70 ~ 1,
+      TRUE ~ 0
+    ),
+    city_num = case_when(
+      city == "Toronto" ~ 3,
+      city == "Montreal" ~ 2,
+      city == "Calgary" ~ 1,
+      TRUE ~ 0
+    ),
+    gender_num = case_when(
+      gender == "Male" ~ 3,
+      gender == "Female" ~ 2,
+      gender == "Other/decline" ~ 1,
+      TRUE ~ 0
+    ),
+    income_num = case_when(
+      income > 3 ~ 3,
+      income > 2 ~ 2,
+      income > 1 ~ 1,
+      TRUE ~ 0
+    )
+  ) |>
+  rowwise() |>
+  mutate(
+    sum_num = sum(age_num, city_num, gender_num, income_num),
+    softmax_prob = exp(sum_num) / exp(12),
+    free_shipping = sample(
+      x = c(0:1),
+      size = 1,
+      replace = TRUE,
+      prob = c(1 - softmax_prob, softmax_prob)
+    )
+  ) |>
+  ungroup()
+
+purchase_data <-
+  purchase_data |>
+  select(
+    -age_num,
+    -city_num,
+    -gender_num,
+    -income_num,
+    -sum_num,
+    -softmax_prob
+  )
+
+```
+
+```{r}
+purchase_data <-
+  purchase_data |>
+  mutate(mean_spend = if_else(free_shipping == 1, 60, 50)) |>
+  rowwise() |>
+  mutate(average_spend = rnorm(1, mean_spend, sd = 5)) |>
+  ungroup() |>
+  select(-mean_spend) |>
+  mutate(across(c(city, gender, free_shipping), as.factor))
+
+purchase_data
+
+```
+
+```{r}
+library(MatchIt)
+
+matched_groups <- matchit(
+  free_shipping ~ age + city + gender + income,
+  data = purchase_data,
+  method = "nearest",
+  distance = "glm"
+)
+
+matched_groups
+```
+
+```{r}
+
+matched_dataset <- match.data(matched_groups)
+
+matched_dataset
+```
+
+```{r}
+propensity_score_regression <- lm(
+  average_spend ~ age + city + gender + income + free_shipping,
+  data = matched_dataset
+)
+
+modelsummary(propensity_score_regression)
+```
+
+## Regression Discontinuity Design
+
+### Simulated Data
+
+```{r}
+library(tidyverse)
+
+set.seed(853)
+
+number_of_observation <- 1000
+
+rdd_example_data <- tibble(
+  person = c(1:number_of_observation),
+  mark = runif(number_of_observation, min = 78, max = 82),
+  income = rnorm(number_of_observation, 10, 1)
+)
+
+## Make income more likely to be higher if they have a mark at least 80
+rdd_example_data <-
+  rdd_example_data |>
+  mutate(
+    noise = rnorm(n = number_of_observation, mean = 2, sd = 1),
+    income = if_else(mark >= 80, income + noise, income)
+  )
+
+rdd_example_data
+```
+
+```{r}
+rdd_example_data |>
+  ggplot(aes(
+    x = mark,
+    y = income
+  )) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(
+    data = rdd_example_data |> filter(mark < 80),
+    method = "lm",
+    color = "black",
+    formula = "y ~ x"
+  ) +
+  geom_smooth(
+    data = rdd_example_data |> filter(mark >= 80),
+    method = "lm",
+    color = "black",
+    formula = "y ~ x"
+  ) +
+  theme_minimal() +
+  labs(
+    x = "Mark",
+    y = "Income ($)"
+  )
+```
+
+### 
+
+```{r}
+library(modelsummary)
+library(rstanarm)
+
+rdd_example_data <-
+  rdd_example_data |>
+  mutate(mark_80_and_over = if_else(mark < 80, 0, 1))
+
+rdd_example <-
+  stan_glm(
+    formula = income ~ mark + mark_80_and_over,
+    data = rdd_example_data,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 853
+  )
+
+saveRDS(
+  rdd_example,
+  file = "rdd_example.rds"
+)
+
+```
+
+### 
+
+```{r}
+rdd_example <-
+  readRDS(file = "rdd_example.rds")
+modelsummary(
+  models = rdd_example,
+  fmt = 2,
+  statistic = "conf.int"
+)
+```
+
+## 
+
+```{r}
+library(rdrobust)
+
+rdrobust(
+  y = rdd_example_data$income,
+  x = rdd_example_data$mark,
+  c = 80,
+  h = 2,
+  all = TRUE
+) |>
+  summary()
+```
+
+### Assumptions
+
+```{r}
+some_data <-
+  tibble(
+    outcome = rnorm(n = 100, mean = 1, sd = 1),
+    running_variable = c(1:100),
+    location = "before"
+  )
+
+some_more_data <-
+  tibble(
+    outcome = rnorm(n = 100, mean = 2, sd = 1),
+    running_variable = c(101:200),
+    location = "after"
+  )
+
+both <-
+  rbind(some_data, some_more_data)
+
+both |>
+  ggplot(aes(x = running_variable, y = outcome, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(formula = y ~ x, method = "lm") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+both |>
+  ggplot(aes(x = running_variable, y = outcome, color = location)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(formula = y ~ poly(x, 3), method = "lm") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+## Alcohol and Crime
+
+```{r}
+library(haven)
+library(tidyverse)
+
+carpenter_dobkin <-
+  read_dta(
+    "P01 Age Profile of Arrest Rates 1979-2006.dta"
+  )
+carpenter_dobkin_prepared <-
+  carpenter_dobkin |>
+  mutate(age = 21 + days_to_21 / 365) |>
+  select(
+    age,
+    assault,
+    aggravated_assault,
+    dui,
+    traffic_violations
+  ) |>
+  pivot_longer(
+    cols = c(assault, aggravated_assault, dui, traffic_violations),
+    names_to = "arrested_for",
+    values_to = "number"
+  )
+
+carpenter_dobkin_prepared |>
+  mutate(
+    arrested_for =
+      case_when(
+        arrested_for == "assault" ~ "Assault",
+        arrested_for == "aggravated_assault" ~ "Aggravated assault",
+        arrested_for == "dui" ~ "DUI",
+        arrested_for == "traffic_violations" ~ "Traffic violations"
+      )
+  ) |>
+  ggplot(aes(x = age, y = number)) +
+  geom_point(alpha = 0.05) +
+  facet_wrap(
+    facets = vars(arrested_for),
+    scales = "free_y"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+carpenter_dobkin_aggravated_assault_only <-
+  carpenter_dobkin_prepared |>
+  filter(
+    arrested_for == "aggravated_assault",
+    abs(age - 21) < 2
+  ) |>
+  mutate(is_21_or_more = if_else(age < 21, 0, 1))
+```
+
+```{r}
+rdd_carpenter_dobkin <-
+  stan_glm(
+    formula = number ~ age + is_21_or_more,
+    data = carpenter_dobkin_aggravated_assault_only,
+    family = gaussian(),
+    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_intercept = normal(0, 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
+    seed = 853
+  )
+
+saveRDS(
+  rdd_example,
+  file = "rdd_example.rds"
+)
+
+rdd_carpenter_dobkin <-
+  readRDS(file = "rdd_example.rds")
+
+modelsummary(
+  models = rdd_carpenter_dobkin,
+  fmt = 2,
+  statistic = "conf.int"
+)
+
+
+```
+
+```{r}
+library(rdrobust)
+
+rdrobust(
+  y = carpenter_dobkin_aggravated_assault_only$number,
+  x = carpenter_dobkin_aggravated_assault_only$age,
+  c = 21,
+  h = 2,
+  all = TRUE
+) |>
+  summary()
+```
+
+## Instrumental Variable
+
+```{r}
+library(broom)
+library(tidyverse)
+
+set.seed(853)
+
+number_of_observation <- 10000
+
+iv_example_data <- tibble(
+  person = c(1:number_of_observation),
+  smoker = sample(
+    x = c(0:1),
+    size = number_of_observation,
+    replace = TRUE
+  )
+)
+```
+
+```{r}
+iv_example_data <-
+  iv_example_data |>
+  rowwise() |>
+  mutate(
+    province =
+      case_when(
+        smoker == 0 ~ sample(
+          x = c("Nova Scotia", "Alberta"),
+          size = 1,
+          replace = FALSE,
+          prob = c(1 / 2, 1 / 2)
+        ),
+        smoker == 1 ~ sample(
+          x = c("Nova Scotia", "Alberta"),
+          size = 1,
+          replace = FALSE,
+          prob = c(1 / 4, 3 / 4)
+        )
+      )
+  ) |>
+  ungroup()
+
+iv_example_data <-
+  iv_example_data |>
+  mutate(tax = case_when(
+    province == "Alberta" ~ 0.3,
+    province == "Nova Scotia" ~ 0.5,
+    TRUE ~ 9999999
+  ))
+
+iv_example_data$tax |> table()
+```
+
+```{r}
+iv_example_data <-
+  iv_example_data |>
+  mutate(health = if_else(
+    smoker == 0,
+    rnorm(n = n(), mean = 1, sd = 1),
+    rnorm(n = n(), mean = 0, sd = 1)
+  ))
+## Health to be one SD higher for people who do not or barely smoke.
+
+```
+
+```{r}
+iv_example_data |>
+  mutate(smoker = as_factor(smoker)) |>
+  ggplot(aes(x = health, fill = smoker)) +
+  geom_histogram(position = "dodge", binwidth = 0.2) +
+  theme_minimal() +
+  labs(
+    x = "Health rating",
+    y = "Number of people",
+    fill = "Smoker"
+  ) +
+  scale_fill_brewer(palette = "Set1") +
+  facet_wrap(vars(province))
+```
+
+```{r}
+health_on_tax <- lm(health ~ tax, data = iv_example_data)
+smoker_on_tax <- lm(smoker ~ tax, data = iv_example_data)
+
+tibble(
+  coefficient = c("health ~ tax", "smoker ~ tax", "ratio"),
+  value = c(
+    coef(health_on_tax)["tax"],
+    coef(smoker_on_tax)["tax"],
+    coef(health_on_tax)["tax"] / coef(smoker_on_tax)["tax"]
+  )
+)
+```
+
+```{r}
+first_stage <- lm(smoker ~ tax, data = iv_example_data)
+health_hat <- first_stage$fitted.values
+second_stage <- lm(health ~ health_hat, data = iv_example_data)
+
+modelsummary(second_stage)
+```
+
+## 
+
+```{r}
+library(estimatr)
+iv_robust(health ~ smoker | tax, data = iv_example_data) |>
+  modelsummary()
+```
+
+## Assumptions
+
+```{dot}
+
+digraph D {
+  
+  node [shape=plaintext, fontname = "helvetica"];
+  a [label = "Income"]
+  b [label = "Happiness"]
+  c [label = "Education"]
+  d [label = "Tax rebate"]
+  { rank=same a b};
+  
+  a->b
+  c->a
+  c->b
+  d->a
+}
+```

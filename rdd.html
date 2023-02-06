@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Regression discontinuity</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="rdd_files/libs/clipboard/clipboard.min.js"></script>
+<script src="rdd_files/libs/quarto-html/quarto.js"></script>
+<script src="rdd_files/libs/quarto-html/popper.min.js"></script>
+<script src="rdd_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="rdd_files/libs/quarto-html/anchor.min.js"></script>
+<link href="rdd_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="rdd_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="rdd_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="rdd_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="rdd_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="rdd_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="rdd_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regression discontinuity</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="video-walk-through" class="level2">
+<h2 class="anchored" data-anchor-id="video-walk-through">Video walk-through</h2>
+<p>This is from Andrew Heiss course on program evaluation techniques. You can visit his <a href="https://evalf22.classes.andrewheiss.com/example/rdd.html">website</a> for getting all the videos and lecture notes</p>
+<ul>
+<li><a href="/files/data/generated_data/tutoring_program.csv"> <code>tutoring_program.csv</code></a></li>
+</ul>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Important</strong>: The results will be slightly different here than they were in the video. That’s because in the data I used in the video, I didn’t round any values, so people could score a 71.8392402 on the entrance exam, which is kind of an excessive number of decimals. In this data, I rounded everything to one decimal point (e.g.&nbsp;71.8), so the gaps and lines will be a tiny bit different here.</p>
+</div>
+</div>
+</section>
+<section id="program-background" class="level2">
+<h2 class="anchored" data-anchor-id="program-background">Program background</h2>
+<p>In this hypothetical example, students take an entrance exam at the beginning of a school year. Those who score 70 or below are automatically enrolled in a free tutoring program and receive assistance throughout the year. At the end of the school year, students take a final test, or exit exam (with a maximum of 100 points) to measure how much they learned overall. Remember, this is a hypothetical example and tests like this don’t really exist, but just go with it.</p>
+<p>You have a dataset with four columns in it:</p>
+<ul>
+<li><code>id</code>: The ID of the student</li>
+<li><code>entrance_exam</code>: The student’s entrance exam score (out of 100)</li>
+<li><code>exit_exam</code>: The student’s exit exam score (out of 100)</li>
+<li><code>tutoring</code>: An indicator variable showing if the student was enrolled in the tutoring program</li>
+</ul>
+</section>
+<section id="load-and-clean-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-and-clean-data">Load and clean data</h2>
+<p>First, let’s download the dataset (if you haven’t already), put in a folder named <code>data</code>, and load it:</p>
+<ul>
+<li><a href="/files/data/generated_data/tutoring_program.csv"> <code>tutoring_program.csv</code></a></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># ggplot(), %&gt;%, mutate(), and friends</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)  <span class="co"># Convert models to data frames</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rdrobust)  <span class="co"># For robust nonparametric regression discontinuity</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rddensity)  <span class="co"># For nonparametric regression discontinuity density tests</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)  <span class="co"># Create side-by-side regression tables</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the data.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># It'd be a good idea to click on the "tutoring" object in the Environment</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># panel in RStudio to see what the data looks like after you load it</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>tutoring <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"tutoring_program.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="step-1-determine-if-process-of-assigning-treatment-is-rule-based" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-determine-if-process-of-assigning-treatment-is-rule-based">Step 1: Determine if process of assigning treatment is rule-based</h2>
+<p>In order to join the tutoring program, students have to score 70 points or lower on the entrance exam. Students who score higher than 70 are not eligible for the program. Since we have a clear 70-point rule, we can assume that the process of participating in the tutoring program is rule-based.</p>
+</section>
+<section id="step-2-determine-if-the-design-is-fuzzy-or-sharp" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-determine-if-the-design-is-fuzzy-or-sharp">Step 2: Determine if the design is fuzzy or sharp</h2>
+<p>Since we know that the program was applied based on a rule, we next want to figure out how strictly the rule was applied. The threshold was 70 points on the test—did people who scored 68 slip through bureaucratic cracks and not participate, or did people who scored 73 sneak into the program? The easiest way to check this is with a graph, and we can get exact numbers with a table.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tutoring, <span class="fu">aes</span>(<span class="at">x =</span> entrance_exam, <span class="at">y =</span> tutoring, <span class="at">color =</span> tutoring)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Make points small and semi-transparent since there are lots of them</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.25</span>, <span class="at">seed =</span> <span class="dv">1234</span>)) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add vertical line</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">70</span>) <span class="sc">+</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add labels</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Entrance exam score"</span>, <span class="at">y =</span> <span class="st">"Participated in tutoring program"</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Turn off the color legend, since it's redundant</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rdd_files/figure-html/check-fuzzy-sharp-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This looks pretty sharp—it doesn’t look like people who scored under 70 participated in the program. We can verify this with a table. There are no people where <code>entrance_exam</code> is greater than 70 and <code>tutoring</code> is false, and no people where <code>entrance_exam</code> is less than 70 and <code>tutoring</code> is true.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tutoring <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tutoring, entrance_exam <span class="sc">&lt;=</span> <span class="dv">70</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">n</span>())</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 2 × 3</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">## # Groups:   tutoring [2]</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   tutoring `entrance_exam &lt;= 70` count</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;lgl&gt;    &lt;lgl&gt;                 &lt;int&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 FALSE    FALSE                   759</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 TRUE     TRUE                    241</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This is thus a sharp design.</p>
+</section>
+<section id="step-3-check-for-discontinuity-in-running-variable-around-cutpoint" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-check-for-discontinuity-in-running-variable-around-cutpoint">Step 3: Check for discontinuity in running variable around cutpoint</h2>
+<p>Next we need to see if there was any manipulation in the running variable—maybe lots of people bunched up around 70 because of how the test was graded (i.e.&nbsp;students wanted to get into the program, so they purposely did poorly on the exam to get under 70). We can do this a couple different ways. First, we’ll make a histogram of the running variable (test scores) and see if there are any big jumps around the threshold:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tutoring, <span class="fu">aes</span>(<span class="at">x =</span> entrance_exam, <span class="at">fill =</span> tutoring)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">boundary =</span> <span class="dv">70</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">70</span>) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Entrance exam score"</span>, <span class="at">y =</span> <span class="st">"Count"</span>, <span class="at">fill =</span> <span class="st">"In program"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rdd_files/figure-html/check-running-discontinuity-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Here it doesn’t look like there’s a jump around the cutoff—there’s a tiny visible difference between the height of the bars right before and right after the 70-point threshold, but it seems to follow the general shape of the overall distribution. We can check to see if that jump is statistically significant with a McCrary density test (explained in <a href="https://mixtape.scunning.com/ch5.html#mccrarys-density-test">section 6.3.1 of <em>Causal Inference: The Mixtape</em></a>). This puts data into bins like a histogram, and then plots the averages and confidence intervals of those bins. If the confidence intervals of the density lines don’t overlap, then there’s likely something systematically wrong with how the test was scored (i.e.&nbsp;too many people getting 69 vs 71). If the confidence intervals overlap, there’s not any significant difference around the threshold and we’re fine.</p>
+<p>First we use <code>rddensity()</code> to do the actual statistical test. You need to feed it two things: the running variable and the cutoff.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Notice this tutoring$entrance_exam syntax. This is one way for R to access</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># columns in data frames---it means "use the entrance_exam column in the</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># tutoring data frame". The general syntax for it is data_frame$column_name</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>test_density <span class="ot">&lt;-</span> <span class="fu">rddensity</span>(tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test_density)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<pre><code>## Manipulation testing using local polynomial density estimation.
+## 
+## Number of obs =       1000
+## Model =               unrestricted
+## Kernel =              triangular
+## BW method =           estimated
+## VCE method =          jackknife
+## 
+## c = 70                Left of c           Right of c          
+## Number of obs         237                 763                 
+## Eff. Number of obs    208                 577                 
+## Order est. (p)        2                   2                   
+## Order bias (q)        3                   3                   
+## BW est. (h)           22.444              19.966              
+## 
+## Method                T                   P &gt; |T|             
+## Robust                -0.5521             0.5809</code></pre>
+</div>
+<p>We can then plot that density test:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The syntax for rdplotdensity is kinda wonky here. You have to feed it the</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rddensity() test, and then you have to specify x, which is your running</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># variable (again!). The type argument tells the plot to show both points and</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># lines---without it, it'll only show lines.</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Finally, notice how I assigned the output of rdplotdensity to a variable named</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot_density_test. In theory, this should make it show nothing---all the</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># output should go to that object. Because of a bug in rdplotdensity, though, it</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># will show a plot automatically even if assigning it to a variable. If we don't</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># assign it to a variable you'll see two identical plots when knitting, which is</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># annoying. So we save it as a variable to hide the output, but get the output</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># for a single plot anyway. Ugh.</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plot_density_test <span class="ot">&lt;-</span> <span class="fu">rdplotdensity</span>(<span class="at">rdd =</span> test_density,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">X =</span> tutoring<span class="sc">$</span>entrance_exam,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">type =</span> <span class="st">"both"</span>)  <span class="co"># This adds both points and lines</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rdd_files/figure-html/plot-running-discontinuity-mcrary-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There’s a lot of output here, but what we care about is the line that starts with “Robust”, which shows the t-test for the difference in the two points on either side of the cutpoint in the plot. Notice in the plot that the confidence intervals overlap substantially. The p-value for the size of that overlap is 0.5809, which is a lot larger than 0.05, so we don’t have good evidence that there’s a significant difference between the two lines. Based on this plot and the t-statistic, we’re probably safe in saying that there’s no manipulation or bunching.</p>
+</section>
+<section id="step-4-check-for-discontinuity-in-outcome-across-running-variable" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-check-for-discontinuity-in-outcome-across-running-variable">Step 4: Check for discontinuity in outcome across running variable</h2>
+<p>Now that we know this is a sharp design and that there’s no bunching of test scores around the 70-point threshold, we can finally see if there’s a discontinuity in final scores based on participation in the tutoring program. Plot the running variable on the x-axis, the outcome variable on the y-axis, and color the points by whether they participated in the program.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tutoring, <span class="fu">aes</span>(<span class="at">x =</span> entrance_exam, <span class="at">y =</span> exit_exam, <span class="at">color =</span> tutoring)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a line based on a linear model for the people scoring 70 or less</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&lt;=</span> <span class="dv">70</span>), <span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a line based on a linear model for the people scoring more than 70</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&gt;</span> <span class="dv">70</span>), <span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">70</span>) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Entrance exam score"</span>, <span class="at">y =</span> <span class="st">"Exit exam score"</span>, <span class="at">color =</span> <span class="st">"Used tutoring"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rdd_files/figure-html/check-outcome-discontinuity-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on this graph, there’s a clear discontinuity! It looks like participation in the tutoring program boosted final test scores.</p>
+</section>
+<section id="step-5-measure-the-size-of-the-effect" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-measure-the-size-of-the-effect">Step 5: Measure the size of the effect</h2>
+<p>There’s a discontinuity, but how big is it? And is it statistically significant?</p>
+<p>We can check the size two different ways: parametrically (i.e.&nbsp;using <code>lm()</code> with specific parameters and coefficients), and nonparametrically (i.e.&nbsp;not using <code>lm()</code> or any kind of straight line and instead drawing lines that fit the data more precisely). We’ll do it both ways.</p>
+<section id="parametric-estimation" class="level3">
+<h3 class="anchored" data-anchor-id="parametric-estimation">Parametric estimation</h3>
+<p>First we’ll do it parametrically by using linear regression. Here we want to explain the variation in final scores based on the entrance exam score and participation in the tutoring program:</p>
+<p><span class="math display">\[
+\text{Exit exam} = \beta_0 + \beta_1 \text{Entrance exam score}_\text{centered} + \beta_2 \text{Tutoring program} + \epsilon
+\]</span></p>
+<p>To make it easier to interpret coefficients, we can center the entrance exam column so that instead of showing the actual test score, it shows how many points above or below 70 the student scored. That way we can use the coefficient for <code>tutoring</code> for the causal effect.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>tutoring_centered <span class="ot">&lt;-</span> tutoring <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">entrance_centered =</span> entrance_exam <span class="sc">-</span> <span class="dv">70</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>model_simple <span class="ot">&lt;-</span> <span class="fu">lm</span>(exit_exam <span class="sc">~</span> entrance_centered <span class="sc">+</span> tutoring,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> tutoring_centered)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(model_simple)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 3 × 5</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   term              estimate std.error statistic  p.value</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 (Intercept)         59.4      0.442      134.  0       </span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 entrance_centered    0.510    0.0269      18.9 1.40e-68</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 tutoringTRUE        10.8      0.800       13.5 3.12e-38</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here’s what these coefficients mean:</p>
+<ul>
+<li><span class="math inline">\(\beta_0\)</span>: This is the intercept. Because we centered entrance exam scores, it shows the average exit exam score at the 70-point threshold. People who scored 70.001 points on the entrance exam score an average of 59.4 points on the exit exam. (Another way to think about this is that it shows the predicted exit exam score when <code>entrance_centered</code> is 0 (i.e.&nbsp;70) and when <code>tutoring</code> is <code>FALSE</code>.)</li>
+<li><span class="math inline">\(\beta_1\)</span>: This is the coefficient for <code>entrance_centered</code>. For every point above 70 that people score on the entrance exam, they score 0.51 points higher on the exit exam. We don’t really care that much about this number.</li>
+<li><span class="math inline">\(\beta_2\)</span>: This is the coefficient for the tutoring program, and <em>this is the one we care about the most</em>. This is the shift in intercept when <code>tutoring</code> is true, or the difference between scores at the threshold. Participating in the tutoring program increases exit exam scores by 10.8 points.</li>
+</ul>
+<p>One advantage to using a parametric approach is that you can include other covariates like demographics. You can also use polynomial regression and include terms like <code>entrance_centered²</code> or <code>entrance_centered³</code> or even <code>entrance_centered⁴</code> to make the line fit the data as close as possible.</p>
+<p>Here we fit the model to the entire data, but in real life, we care most about the observations right around the threshold, which means this model is actually <strong><em>wrong</em></strong>. Scores that are super high or super low shouldn’t really influence our effect size, since we only care about the people who score just barely under and just barely over 70.</p>
+<p>We can fit the same model but restrict it to people within a smaller window, or bandwidth, like ±10 points, or ±5 points:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model_bw_10 <span class="ot">&lt;-</span> <span class="fu">lm</span>(exit_exam <span class="sc">~</span> entrance_centered <span class="sc">+</span> tutoring,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> <span class="fu">filter</span>(tutoring_centered,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                                entrance_centered <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">10</span> <span class="sc">&amp;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                                  entrance_centered <span class="sc">&lt;=</span> <span class="dv">10</span>))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(model_bw_10)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 3 × 5</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   term              estimate std.error statistic   p.value</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 (Intercept)         60.4       0.752     80.3  2.99e-249</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 entrance_centered    0.388     0.114      3.40 7.45e-  4</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 tutoringTRUE         9.27      1.31       7.09 6.27e- 12</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>model_bw_5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(exit_exam <span class="sc">~</span> entrance_centered <span class="sc">+</span> tutoring,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> <span class="fu">filter</span>(tutoring_centered,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                                entrance_centered <span class="sc">&gt;=</span> <span class="sc">-</span><span class="dv">5</span> <span class="sc">&amp;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                                  entrance_centered <span class="sc">&lt;=</span> <span class="dv">5</span>))</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(model_bw_5)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 3 × 5</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   term              estimate std.error statistic   p.value</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 (Intercept)         60.6       1.12      54.3  4.78e-118</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 entrance_centered    0.380     0.331      1.15 2.53e-  1</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 tutoringTRUE         9.12      1.91       4.77 3.66e-  6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can compare all these models simultaneously with <code>modelsummary()</code>:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"Full data"</span> <span class="ot">=</span> model_simple,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Bandwidth = 10"</span> <span class="ot">=</span> model_bw_10,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Bandwidth = 5"</span> <span class="ot">=</span> model_bw_5))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+
+<table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> Full data </th>
+   <th style="text-align:center;"> Bandwidth = 10 </th>
+   <th style="text-align:center;"> Bandwidth = 5 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:center;"> 59.411*** </td>
+   <td style="text-align:center;"> 60.377*** </td>
+   <td style="text-align:center;"> 60.631*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.442) </td>
+   <td style="text-align:center;"> (0.752) </td>
+   <td style="text-align:center;"> (1.117) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> entrance_centered </td>
+   <td style="text-align:center;"> 0.510*** </td>
+   <td style="text-align:center;"> 0.388*** </td>
+   <td style="text-align:center;"> 0.380 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.027) </td>
+   <td style="text-align:center;"> (0.114) </td>
+   <td style="text-align:center;"> (0.331) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;background-color: #F6D645 !important;"> tutoringTRUE </td>
+   <td style="text-align:center;background-color: #F6D645 !important;"> 10.800*** </td>
+   <td style="text-align:center;background-color: #F6D645 !important;"> 9.273*** </td>
+   <td style="text-align:center;background-color: #F6D645 !important;"> 9.122*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;box-shadow: 0px 1pxborder-bottom: 1px solid">  </td>
+   <td style="text-align:center;box-shadow: 0px 1pxborder-bottom: 1px solid"> (0.800) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxborder-bottom: 1px solid"> (1.309) </td>
+   <td style="text-align:center;box-shadow: 0px 1pxborder-bottom: 1px solid"> (1.912) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Num.Obs. </td>
+   <td style="text-align:center;"> 1000 </td>
+   <td style="text-align:center;"> 404 </td>
+   <td style="text-align:center;"> 194 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:center;"> 0.268 </td>
+   <td style="text-align:center;"> 0.162 </td>
+   <td style="text-align:center;"> 0.222 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> R2 Adj. </td>
+   <td style="text-align:center;"> 0.267 </td>
+   <td style="text-align:center;"> 0.158 </td>
+   <td style="text-align:center;"> 0.214 </td>
+  </tr>
+</tbody>
+<tfoot><tr><td style="padding: 0; " colspan="100%">
+<sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
+</table>
+
+</div>
+</div>
+<p>The effect of <code>tutoring</code> differs a lot across these different models, from 9.1 to 10.8. Which one is right? I don’t know. Definitely not the full data one.</p>
+<p>Also notice how much the sample size (N) changes across the models. As you narrow the bandwidth, you look at fewer and fewer observations.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tutoring, <span class="fu">aes</span>(<span class="at">x =</span> entrance_exam, <span class="at">y =</span> exit_exam, <span class="at">color =</span> tutoring)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add lines for the full model (model_simple)</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&lt;=</span> <span class="dv">70</span>),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&gt;</span> <span class="dv">70</span>),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add lines for bandwidth = 10</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&lt;=</span> <span class="dv">70</span>, entrance_exam <span class="sc">&gt;=</span> <span class="dv">60</span>),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&gt;</span> <span class="dv">70</span>, entrance_exam <span class="sc">&lt;=</span> <span class="dv">80</span>),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add lines for bandwidth = 5</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&lt;=</span> <span class="dv">70</span>, entrance_exam <span class="sc">&gt;=</span> <span class="dv">65</span>),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">filter</span>(tutoring, entrance_exam <span class="sc">&gt;</span> <span class="dv">70</span>, entrance_exam <span class="sc">&lt;=</span> <span class="dv">75</span>),</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">70</span>) <span class="sc">+</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Zoom in</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">90</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">75</span>)) <span class="sc">+</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Entrance exam score"</span>, <span class="at">y =</span> <span class="st">"Exit exam score"</span>, <span class="at">color =</span> <span class="st">"Used tutoring"</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="do">## ℹ Please use `linewidth` instead.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rdd_files/figure-html/different-lm-bandwidths-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="nonparametric-estimation" class="level3">
+<h3 class="anchored" data-anchor-id="nonparametric-estimation">Nonparametric estimation</h3>
+<p>Instead of using linear regression to measure the size of the discontinuity, we can use nonparametric methods. Essentially this means that R will not try to fit a straight line to the data—instead it’ll curve around the points and try to fit everything as smoothly as possible.</p>
+<p>The <code>rdrobust()</code> function makes it really easy to measure the gap at the cutoff with nonparametric estimation. Here’s the simplest version:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Notice how we have to use the tutoring$exit_exam syntax here. Also make sure</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># you set the cutoff with c</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rdrobust</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "Mass points detected in the running variable."</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Sharp RD estimates using local polynomial regression.</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                       mserd</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Triangular</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Eff. Number of Obs.             144          256</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="do">## BW est. (h)                   9.969        9.969</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="do">## BW bias (b)                  14.661       14.661</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="do">## rho (h/b)                     0.680        0.680</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     155          262</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="do">##         Method     Coef. Std. Err.         z     P&gt;|z|      [ 95% C.I. ]       </span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="do">##   Conventional    -8.578     1.601    -5.359     0.000   [-11.715 , -5.441]    </span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="do">##         Robust         -         -    -4.352     0.000   [-12.101 , -4.587]    </span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There are a few important pieces of information to look at in this output:</p>
+<ul>
+<li>The thing you care about the most is the actual effect size. This is the coefficient in the table at the bottom, indicated with the “Conventional” method. Here it’s -8.578, which means the tutoring program causes an 8-point change in exit exam scores. The table at the bottom also includes standard errors, p-values, and confidence intervals for the coefficient, both normal estimates (conventional) and robust estimates (robust). According to both types of estimates, this 8 point bump is statistically significant (p &lt; 0.001; the 95% confidence interval definitely doesn’t ever include 0).</li>
+<li>Importantly, notice that the coefficient here is actually negative (-8.578), while our previous parametric estimates were all positive. That does <em>not</em> mean that the program causes a drop in test scores. That negative value is just a side effect of how <code>rdrobust()</code> measures the gap. It looks at the value of the treatment group right before the threshold and then shows that test scores drop when shifting to the control group (while before we talked about the opposite story: test scores increase as you move from the control group to the treatment group). There’s no way to flip the sign within <code>rdrobust()</code>, so you need to look at the plot and see what the gap is really doing.</li>
+<li>The model used a bandwidth of 9.969 (<code>BW est. (h)</code> in the output), which means it only looked at people with test scores of 70 ± 10. It decided on this bandwidth automatically, but you can change it to whatever you want.</li>
+<li>The model used a triangular kernel. This is the most esoteric part of the model—the kernel decides how much weight to give to observations around the cutoff. Test scores like 69.99 or 70.01 are extremely close to 70, so they get the most weight. Scores like 67 or 73 are a little further away so they matter less. Scores like 64 or 76 matter even less, so they get even less weight. You can use different kernels too, and <a href="https://en.wikipedia.org/wiki/Kernel_(statistics)#Kernel_functions_in_common_use">Wikipedia has a nice graphic showing the shapes of these different kernels</a> and how they give different weights to observations at different distances.</li>
+</ul>
+<p>We can plot this nonparametric model with <code>rdplot()</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rdplot</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "Mass points detected in the running variable."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="rdd_files/figure-html/rdplot-basic-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Look at that 8.5 point jump at 70! Neat!</p>
+<p>Notice that the points here aren’t actually the observations in the dataset. The <code>rdplot()</code> function makes bins of points (like a histogram) and then shows the average outcome within each bin. You can control how many bins are used in the x-axis with the <code>nbins</code> or <code>binselect</code> arguments in <code>rdplot()</code> (run <code>?rdplot</code> in your console to see all the possible options for plotting nonparametric discontinuities).</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Side note</strong>: <code>rdplot()</code> uses the same plotting system as <code>ggplot()</code>, so you can add layers like <code>labs()</code> or <code>geom_point()</code> or anything else, which is cool, but getting to that underlying <code>ggplot()</code> object is weird. To do it, store the results of <code>rdplot</code> as an object, like <code>asdf</code>, then use <code>asdf$rdplot</code> to access the plot:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>asdf <span class="ot">&lt;-</span> <span class="fu">rdplot</span>(...)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>asdf<span class="sc">$</span>rdplot <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Running variable"</span>, <span class="at">y =</span> <span class="st">"Outcome variable"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You don’t need to worry about all that for showing simple plots though!</p>
+</div>
+</div>
+<p>By default, <code>rdrobust()</code> chooses the bandwidth size automatically based on fancy algorithms that economists have developed. You can use <code>rdbwselect()</code> to see what that bandwidth is, and if you include the <code>all = TRUE</code> argument, you can see a bunch of different potential bandwidths based on a bunch of different algorithms:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This says to use the mserd version, which according to the help file for</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rdbwselect means "the mean squared error-optimal bandwidth selector for RD</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># treatment effects". Sounds great.</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rdbwselect</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "Mass points detected in the running variable."</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: rdbwselect</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                       mserd</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Triangular</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     155          262</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="do">## =======================================================</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="do">##                   BW est. (h)    BW bias (b)</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="do">##             Left of c Right of c  Left of c Right of c</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="do">## =======================================================</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="do">##      mserd     9.969      9.969     14.661     14.661</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="do">## =======================================================</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>What are the different possible bandwidths we could use?</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rdbwselect</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>, <span class="at">all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "Mass points detected in the running variable."</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: rdbwselect</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                         All</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Triangular</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     155          262</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="do">## =======================================================</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="do">##                   BW est. (h)    BW bias (b)</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="do">##             Left of c Right of c  Left of c Right of c</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="do">## =======================================================</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="do">##      mserd     9.969      9.969     14.661     14.661</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="do">##     msetwo    11.521     10.054     17.067     14.907</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="do">##     msesum    12.044     12.044     17.631     17.631</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="do">##   msecomb1     9.969      9.969     14.661     14.661</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="do">##   msecomb2    11.521     10.054     17.067     14.907</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="do">##      cerrd     7.058      7.058     14.661     14.661</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="do">##     certwo     8.156      7.118     17.067     14.907</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="do">##     cersum     8.526      8.526     17.631     17.631</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="do">##   cercomb1     7.058      7.058     14.661     14.661</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a><span class="do">##   cercomb2     8.156      7.118     17.067     14.907</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="do">## =======================================================</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Phew. There are a lot here. The best one was <code>mserd</code>, or ±9.69. Some say ±7, others ±12, other are asymmetric and say -11.5 before and +10 after. Try a bunch of different bandwidths as part of your sensitivity analysis and see if your effect size changes substantially as a result.</p>
+<p>Another common approach to sensitivity analysis is to use the ideal bandwidth, twice the ideal, and half the ideal (so in our case 10, 20, and 5) and see if the estimate changes substantially. Use the <code>h</code> argument to specify your own bandwidth</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rdrobust</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>, <span class="at">h =</span> <span class="fl">9.969</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Sharp RD estimates using local polynomial regression.</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                      Manual</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Triangular</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Eff. Number of Obs.             144          256</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="do">## BW est. (h)                   9.969        9.969</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="do">## BW bias (b)                   9.969        9.969</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="do">## rho (h/b)                     1.000        1.000</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     237          763</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="do">##         Method     Coef. Std. Err.         z     P&gt;|z|      [ 95% C.I. ]       </span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="do">##   Conventional    -8.578     1.601    -5.359     0.000   [-11.715 , -5.441]    </span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="do">##         Robust         -         -    -3.276     0.001   [-12.483 , -3.138]    </span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="fu">rdrobust</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>, <span class="at">h =</span> <span class="fl">9.969</span> <span class="sc">*</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Sharp RD estimates using local polynomial regression.</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                      Manual</span></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Triangular</span></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="do">## Eff. Number of Obs.             206          577</span></span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="do">## BW est. (h)                  19.938       19.938</span></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="do">## BW bias (b)                  19.938       19.938</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="do">## rho (h/b)                     1.000        1.000</span></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     237          763</span></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a><span class="do">##         Method     Coef. Std. Err.         z     P&gt;|z|      [ 95% C.I. ]       </span></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="do">##   Conventional    -9.151     1.130    -8.100     0.000   [-11.365 , -6.937]    </span></span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a><span class="do">##         Robust         -         -    -4.980     0.000   [-11.670 , -5.078]    </span></span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a><span class="fu">rdrobust</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam, <span class="at">c =</span> <span class="dv">70</span>, <span class="at">h =</span> <span class="fl">9.969</span> <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="do">## Sharp RD estimates using local polynomial regression.</span></span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                      Manual</span></span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Triangular</span></span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a><span class="do">## Eff. Number of Obs.              82          109</span></span>
+<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a><span class="do">## BW est. (h)                   4.984        4.984</span></span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="do">## BW bias (b)                   4.984        4.984</span></span>
+<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a><span class="do">## rho (h/b)                     1.000        1.000</span></span>
+<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     237          763</span></span>
+<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a><span class="do">##         Method     Coef. Std. Err.         z     P&gt;|z|      [ 95% C.I. ]       </span></span>
+<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a><span class="do">##   Conventional    -8.201     2.348    -3.493     0.000   [-12.803 , -3.600]    </span></span>
+<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a><span class="do">##         Robust         -         -    -2.032     0.042   [-13.618 , -0.246]    </span></span>
+<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here the coefficients change slightly:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Bandwidth</th>
+<th style="text-align: center;">Effect size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">9.969 (ideal)</td>
+<td style="text-align: center;">8.578</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">19.938 (twice)</td>
+<td style="text-align: center;">9.151</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4.984 (half)</td>
+<td style="text-align: center;">8.201</td>
+</tr>
+</tbody>
+</table>
+<p>You can also adjust the kernel. By default <code>rd_robust</code> uses a triangular kernel (more distant observations have less weight linearly), but you can switch it to Epanechnikov (more distant observations have less weight following a curve) or uniform (more distant observations have the same weight as closer observations; this is unweighted).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Non-parametric RD with different kernels</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rdrobust</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">c =</span> <span class="dv">70</span>, <span class="at">kernel =</span> <span class="st">"triangular"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()  <span class="co"># Default</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "Mass points detected in the running variable."</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Sharp RD estimates using local polynomial regression.</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                       mserd</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Triangular</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Eff. Number of Obs.             144          256</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="do">## BW est. (h)                   9.969        9.969</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="do">## BW bias (b)                  14.661       14.661</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="do">## rho (h/b)                     0.680        0.680</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     155          262</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="do">##         Method     Coef. Std. Err.         z     P&gt;|z|      [ 95% C.I. ]       </span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="do">##   Conventional    -8.578     1.601    -5.359     0.000   [-11.715 , -5.441]    </span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="do">##         Robust         -         -    -4.352     0.000   [-12.101 , -4.587]    </span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="fu">rdrobust</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam,</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>         <span class="at">c =</span> <span class="dv">70</span>, <span class="at">kernel =</span> <span class="st">"epanechnikov"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "Mass points detected in the running variable."</span></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a><span class="do">## Sharp RD estimates using local polynomial regression.</span></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                       mserd</span></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                   Epanechnikov</span></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Eff. Number of Obs.             130          204</span></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a><span class="do">## BW est. (h)                   8.201        8.201</span></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a><span class="do">## BW bias (b)                  12.807       12.807</span></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a><span class="do">## rho (h/b)                     0.640        0.640</span></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     155          262</span></span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a><span class="do">##         Method     Coef. Std. Err.         z     P&gt;|z|      [ 95% C.I. ]       </span></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a><span class="do">##   Conventional    -8.389     1.677    -5.001     0.000   [-11.677 , -5.101]    </span></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a><span class="do">##         Robust         -         -    -4.085     0.000   [-12.116 , -4.260]    </span></span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a><span class="fu">rdrobust</span>(<span class="at">y =</span> tutoring<span class="sc">$</span>exit_exam, <span class="at">x =</span> tutoring<span class="sc">$</span>entrance_exam,</span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>         <span class="at">c =</span> <span class="dv">70</span>, <span class="at">kernel =</span> <span class="st">"uniform"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] "Mass points detected in the running variable."</span></span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a><span class="do">## Sharp RD estimates using local polynomial regression.</span></span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                 1000</span></span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a><span class="do">## BW type                       mserd</span></span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a><span class="do">## Kernel                      Uniform</span></span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a><span class="do">## VCE method                       NN</span></span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Obs.                  237          763</span></span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a><span class="do">## Eff. Number of Obs.             119          176</span></span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a><span class="do">## Order est. (p)                    1            1</span></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a><span class="do">## Order bias  (q)                   2            2</span></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a><span class="do">## BW est. (h)                   7.346        7.346</span></span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a><span class="do">## BW bias (b)                  12.561       12.561</span></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a><span class="do">## rho (h/b)                     0.585        0.585</span></span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a><span class="do">## Unique Obs.                     155          262</span></span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a><span class="do">##         Method     Coef. Std. Err.         z     P&gt;|z|      [ 95% C.I. ]       </span></span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a><span class="do">##   Conventional    -8.175     1.651    -4.952     0.000   [-11.411 , -4.939]    </span></span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a><span class="do">##         Robust         -         -    -4.085     0.000   [-11.704 , -4.115]    </span></span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a><span class="do">## =============================================================================</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Again, the coefficients change slightly:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Kernel</th>
+<th style="text-align: center;">Effect size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Triangular</td>
+<td style="text-align: center;">8.578</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Epanechnikov</td>
+<td style="text-align: center;">8.389</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Uniform</td>
+<td style="text-align: center;">8.175</td>
+</tr>
+</tbody>
+</table>
+<p>Which one is best? ¯\_(ツ)_/¯. All that really matters is that the size and direction of the effect doesn’t change. It’s still positive and it’s still in the 8–9ish point range.</p>
+</section>
+</section>
+<section id="step-6-compare-all-the-effects" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-compare-all-the-effects">Step 6: Compare all the effects</h2>
+<p>We just estimated a ton of effect sizes. In real life you’d generally just report one of these as your final effect, but you’d run the different parametric and nonparametric models to check how reliable and robust your findings are. Here’s everything we just found:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Method</th>
+<th style="text-align: center;">Bandwidth</th>
+<th style="text-align: center;">Kernel</th>
+<th style="text-align: center;">Estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Parametric</td>
+<td style="text-align: center;">Full data</td>
+<td style="text-align: center;">Unweighted</td>
+<td style="text-align: center;">10.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Parametric</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">Unweighted</td>
+<td style="text-align: center;">9.273</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Parametric</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">Unweighted</td>
+<td style="text-align: center;">9.122</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Nonparametric</td>
+<td style="text-align: center;">9.969</td>
+<td style="text-align: center;">Triangular</td>
+<td style="text-align: center;">8.578</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Nonparametric</td>
+<td style="text-align: center;">19.938</td>
+<td style="text-align: center;">Triangular</td>
+<td style="text-align: center;">9.151</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Nonparametric</td>
+<td style="text-align: center;">4.984</td>
+<td style="text-align: center;">Triangular</td>
+<td style="text-align: center;">8.201</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Nonparametric</td>
+<td style="text-align: center;">8.201</td>
+<td style="text-align: center;">Epanechnikov</td>
+<td style="text-align: center;">8.389</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Nonparametric</td>
+<td style="text-align: center;">7.346</td>
+<td style="text-align: center;">Uniform (unweighted)</td>
+<td style="text-align: center;">8.175</td>
+</tr>
+</tbody>
+</table>
+<p>In real life, I’d likely report the simplest one (row 4: nonparametric, automatic bandwidth, triangular kernel), but knowing how much the effect varies across model specifications is helpful.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

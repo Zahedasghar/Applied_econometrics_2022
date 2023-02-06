@@ -52,3 +52,4 @@ model1 <- lm(lwg ~ log(inc), data = df)
 model2 <- lm(lwg ~ log(inc) + wc + k5, data = df)
 # And make a nice table
 msummary(list(model1, model2))
+

@@ -1,0 +1,262 @@
+---
+title: "Regression Discontinuity Design "
+subtitle: " School of Economics, QAU, Islamabad"
+author: "Zahid Asghar"
+date: today
+format: 
+  revealjs:
+    self-contained: false
+    slide-number: c/t
+    width: 1600
+    height: 900
+    logo: "https://www.rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-Flat.png"
+    footer: "[zahid asghar](https://zahidasghar.com/)"
+    theme: ["simple", "custom.scss"]
+    echo: true
+    multiplex: true
+    code-link: true
+    chalkboard: true
+    title-slide-attributes:
+      data-background-color: "#447099"
+editor: source
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(httr)
+clrs <- MetBrewer::met.brewer(name = "Java")
+clrs_lt <- colorspace::lighten(clrs, 0.9)
+knitr::opts_chunk$set(fig.retina = 3, collapse = TRUE)
+options(digits = 3, width = 75)
+```
+
+## Outline[^1] {background-color="#447099"}
+
+-   ### Introduction to Regression Discontinuity Designs
+
+-   ### Sharp and Fuzzy Regression Discontinuity Designs
+
+-   ### Simulated Sharp and Fuzzy Regression Discontinuity Designs using R
+
+-   ### Encourage the use of this technique and R 
+
+[^1]: These notes are from [Andrew Heiss](https://andrewheiss.com) and the books mentioned in the course.
+
+## Regression Discontinuity Designs (RDD) {background-color="#447099"}
+
+
+When randomization is not feasible, how can we exploit implementation features of the program to measure its impact?
+
+-   Answer: Quasi-experiments - Example: Regression Discontinuity Design.
+
+***Regression discontinuity design*** (RDD) is an important method that can be used for programs that have a continuous eligibility index with a clearly defined eligibility threshold [(cuttoff score)]{.pink} to determine who is eligible and who is not.
+
+-   The regression discontinuity design is a statistical approach that utilizes threshold based decision making to estimate causal estimates of different interventions.
+
+##  {background-color="#447099"}
+
+-   Regression discontinuity is relatively simple to implement, transparent, and provides "real world" effects of treatments and policies.
+
+-   Graphical presentation and statistical analysis of data.
+
+-   Developed by Psychologists but later on in much use with labor economists
+
+-   Despite frequent use threshold based decision making, regression discontinuity is underutilized.
+
+## Discontinuity Design {background-color="#447099"}
+
+Many social programs select beneficiaries using an [index]{.pink} or [score]{.pink}
+
+::: columns
+::: {.column width="30%"}
+-   **Anti-poverty Programs**
+
+-   **Pensions**
+
+-   **Education**
+
+-   **Agriculture**
+:::
+
+::: {.column width="70%"}
+-   Targeted to households below a given poverty index/income
+-   Targeted to population above a certain age
+-   Scholarships targeted to students with high scores on standarized text
+-   Fertilizer program targeted to small farms less than given number of hectares)
+:::
+:::
+
+## Example: [Effect of fertilizer program on agriculture production]{.hi-purple}
+
+### [Goal]{.hi-purple}
+
+**Improve school attendance for poor students**
+
+### [Method]{.hi-purple}
+
+-   **Households with a score (Pa) of assets** $\le$ 50 **are [poor]{.hi-purple}**
+-   **Households with a score (Pa) of assets** $\gt$ 50 **are not poor**
+
+### [Intervention]{.hi-purple}
+
+**Poor households receive scholarships to send to children to school**
+
+
+## Some more examples {.hi-purple}
+**We often apply regression-discontinuity designs in settings with some arbitrary threshold embeded within some bureaucratic decision.**
+
+-   **Large scale manufacturing >15 employees.**
+-   **Prisoners are eligible for early parole if some score exceeds a threshold.**
+-   **An individual is eligible for Medicare if her age is at least 65.**
+-   **You get a ticket if your speed exceeds the speed limit.** 
+
+## [Types of RDD]{.hi-purple}
+
+-   **With regard to Treatment Assignment:**
+
+    -   [**Sharp Design**]{.pink}: Where the cut-point perfectly predicts who does/doesn't receive intervention
+
+        -   Characteristics cant be perfectly manipulated by invidual
+
+    -   [**Fuzzy Design**]{.pink}: Where there exists "cross-overs" (for various reasons)
+
+-   **With regard to Analytic Approach**:
+
+    -   [Non-parametric: local randomization approach]{.hi-purple}
+    -   Parametric: uses every observation in the sample
+
+##  
+
+-   Ideal for situations when there is a [**cut-score**]{.hi-purple} in which subjects above/below a threshold receive program resources or an intervention
+
+-   The variable used to determine the threshold is called the [**"rating" or "forcing"**]{.hi-purple} variable. Examples: GPA, household income
+
+-   Quasi-experimental design used to estimate the rigor and validity of a **Randomized Control Trial (RCT)**
+
+-   In many fields, regression discontinuity are considered to be one of the most rigorous quasi-experimental methods
+
+## [Internal Validity]{.hi-purple}
+
+-   **Imprecise Control**
+
+    -   No one single entity or factor should determine a rating score. For a RDD to yield an unbiased LATE estimate at the cuttoff, it is important that the eligibility index not be manipulated around the cutoff so that an individual can change treatment control status.
+
+-   Clear discontinuity for treatment status at the cut-point
+
+### [The Scenario]{.hi-purple}
+
+-   Ehsaas scholarship criteria for grant of support is Rs.45,000 income of parents *prior to viewing any actual data*. A threshold of Rs.45,000/ month income is established: students below this cut-point will receive scholarshio, those above will not.
+-   Besides assistance, one may want to determine if scholarship proves effective in relation to final grade.
+
+
+## [Model]{.hi-purple}
+
+$$ Y_i=\alpha+\beta_0 T_i+\beta_1 r_i+\epsilon$$ $\alpha$ is Estimated marginal mean ,$\beta_0$ is marginal impact of program, $T_i$ is Treatment status (0,1), $\beta_1$ is Relationship between scholarship and Final Grade, $r_i$ is Individual scores on the rating variable (Scholarship amount; centered) 
+
+### Simulation Data
+
+-   Institutional Data:
+
+    -   Taken from supplemental instruction STEM report, N=589
+    -   Scores are adjusted on outcome for demonstration purposes
+
+
+## Sharp Designs {.scrollable}
+
+```{r, warning=FALSE, message=FALSE}
+
+# generate some sample data
+W <- runif(1000, -1, 1)
+y <- 3 + 2 * W + 10 * (W>=0) + rnorm(1000)
+# load the package 'rddtools'
+library(rddtools)
+
+# construct rdd_data 
+data <- rdd_data(y, W, cutpoint = 0)
+library(ggplot2)
+ggplot(data)+aes(x=W,y=y)+geom_point()
+# estimate the sharp RDD model
+rdd_mod <- rdd_reg_lm(rdd_object = data, 
+                      slope = "same")
+summary(rdd_mod)
+```
+
+## 
+
+```{r }
+# plot the sample data
+
+plot(data,
+     col = "steelblue",
+     cex = 0.35, 
+     xlab = "W", 
+     ylab = "Y")
+```
+
+## 
+
+```{r}
+# plot the RDD model along with binned observations
+plot(rdd_mod,
+     cex = 0.35, 
+     col = "steelblue", 
+     xlab = "W", 
+     ylab = "Y")
+```
+
+## [Fuzzy Designs]{.hi-purple}
+
+```{r plot}
+library(MASS)
+# generate sample data
+mu <- c(0, 0)
+sigma <- matrix(c(1, 0.7, 0.7, 1), ncol = 2)
+
+set.seed(1234)
+d <- as.data.frame(mvrnorm(2000, mu, sigma))
+colnames(d) <- c("W", "Y")
+
+# introduce fuzziness
+d$treatProb <- ifelse(d$W < 0, 0, 0.8)
+
+fuzz <- sapply(X = d$treatProb, FUN = function(x) rbinom(1, 1, prob = x))
+
+# treatment effect
+d$Y <- d$Y + fuzz * 2
+```
+
+## 
+
+```{r}
+# generate a colored plot of treatment and control group
+plot(d$W, d$Y,
+     col = c("steelblue", "darkred")[factor(fuzz)], 
+     pch= 20, 
+     cex = 0.5,
+     xlim = c(-3, 3),
+     ylim = c(-3.5, 5),
+     xlab = "W",
+     ylab = "Y")
+# add a dashed vertical line at cutoff
+abline(v = 0, lty = 2)
+```
+
+## Limitation and Interpretation of RDD
+
+1.    Estimates the impact of the program around the cut-off or locally, and not for all eligible. If policy is to evaluate program for all, then RDD may not be good choice.
+2.    Complications for fuzzy RDD. 
+3.    Bandwidth: As large as possible 
+4.    Sensitive to functional form
+
+::: callout-warning
+Eligibility rule or cutoff should be resistant to manipulation by enumerators, potential beneficiaries, program administrators, or politicians.  
+:::
+
+## Checklist: Regression Discontinuity Design 
+-   Is the index continuous around the cutoff score at the time of the baseline?  
+-   Is there any evidence of noncompliance? If yes, then apply IV for fuzzy RDD
+-   Is there any evidence of manipulation of cutoff in index score?
+-   Is the cutoff unique to the program being evaluated, or is the cutoff used by other programs as well?
+
+
+For more on these codes you can read [Ch.13 Introduction to Econometrics with R](https://www.econometrics-with-r.org/13-4-qe.html)

@@ -1,0 +1,452 @@
+---
+title: "Problem Set 6"
+author: "YOUR NAME HERE" # put your name here!
+date: "Ungraded, For Practice Only" # due date
+format:
+  html: 
+    self-contained: true # so we don't need other files (like plot images) 
+    toc: true # show a table of contents
+    toc-location: left
+    theme: default
+    df-print: paged # by default, show tables (tibbles) as paged tables
+editor: visual
+execute:
+  echo: true # show all input code in final document
+---
+
+```{r}
+#| label: load-packages
+#| warning: false
+#| message: false
+# load packages, they are all installed for you already (in the cloud only)
+library(tidyverse) # your friend and mine
+library(broom) # for tidy regression
+library(modelsummary) # for nice regression tables
+library(fixest) # for fixed effects and 2SLS/IV regression
+library(car) # for f-test
+```
+
+# Theory and Concepts
+
+## Question 1
+
+In your own words, describe what *fixed effects* are, when we can use them, and how they remove endogeneity.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+## Question 2
+
+In your own words, describe the logic of a *difference-in-difference* model: what is it comparing against what, and how does it estimate the effect of treatment? What assumption must be made about the treatment and control group for the model to be valid?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+## Question 3
+
+In your own words, describe the logic of an *instrumental variables* model: how does this approach identify the causal effect of $X$ on $Y$? What makes for a valid instrument? When using a Two-Stage Least Squares approach, what is estimated at each stage?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+# R Questions
+
+Answer the following questions using `R`. When necessary, please write answers in the same document (rendered to `html` or `pdf`, typed `.doc(x)`, or handwritten) as your answers to the above questions. Be sure to include (email or print an `.R` file, or show in your rendered quarto document) your code and the outputs of your code with the rest of your answers.
+
+## Question 4 (Fixed Effects)
+
+-   [<i class="fas fa-table"></i> `PeaceCorps.csv`](http://metricsf22.classes.ryansafner.com/files/data/PeaceCorps.csv)
+
+Download and read in `PeaceCorps.csv` dataset. If you don't want to download/upload it, you can read it in directly from the url by running this chunk:
+
+```{r}
+# run or edit this chunk
+pc <- read_csv("http://metricsf22.classes.ryansafner.com/files/data/PeaceCorps.csv")
+```
+
+How do people respond to changes in economic conditions? Are they more likely to pursue public service when private sector jobs are scarce? This dataset contains variables at the U.S. State (& D.C.) level:
+
+| Variable       | Description                                           |
+|----------------|-------------------------------------------------------|
+| `state`        | U.S. State                                            |
+| `year`         | Year                                                  |
+| `appspc`       | Applications to the Peace Corps (per capita) in State |
+| `unemployrate` | State unemployment rate                               |
+
+**Do more people apply to the Peace Corps when unemployment increases (and reduces other opportunities)?**
+
+### Part A
+
+Before looking at the data, what does your economic intuition tell you? Explain your hypothesis.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+### Part B
+
+To get the hang of the data we're working with, `count` (separately) the number of `state`s, and the number of `year`s. Get the number of `n_distinct()` `state`s and `year`s (Do these inside the `summarize()` command), as well as the `distinct()` values of each (don't use the `summarize()` command for this part).
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+pc|>count(state)
+pc|>count(year)
+pc|>summarise(n_distinct(state),n_distinct(year))
+
+pc|>distinct(state)
+```
+
+### Part C
+
+Create a scatterplot of `appspc` (Y) on `unemployrate` (X). Which State is an outlier? How would this affect the pooled regression estimates? Create a *second* scatterplot that does not include this State.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+ggplot(pc)+aes(x=unemployrate,y=appspc)+geom_point()
+
+ggplot(pc)+aes(x=unemployrate,y=appspc)+geom_point()+geom_label(data=pc|>filter(appspc>200),aes(label=state))
+
+pc1<-pc|>filter(appspc<200)
+  ggplot(pc1)+aes(x=unemployrate,y=appspc)+geom_point()
+
+
+  
+```
+
+### Part D
+
+Run two *pooled* regressions, one with the outliers, and one without them. Write out the estimated regression equation for each. Interpret the coefficient, and comment on how it changes between the two regressions.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+POL<-lm(appspc~unemployrate,data=pc)
+POL_nooutlier<-lm(appspc~unemployrate,data=pc1)
+tidy(POL)
+tidy(POL_nooutlier)
+```
+
+### Part E
+
+Now run a regression with State fixed effects using the dummy variable method. (Ensure that `state` is a factor variable, and insert in the regression. You can either `mutate()` it into a `factor` beforehand, or just do `factor(state)` in the `lm` command.) Interpret the marginal effect of `unemployrate` on `appspc`. How did it change?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+fe<-lm(appspc~unemployrate+factor(state),data=pc)
+tidy(fe)
+```
+
+### Part F
+
+Find the coefficient for Maryland and interpret it. How many applications per capita does Maryland have?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+# if we want to extract it using R
+fe_reg_tidy <- tidy(fe)
+
+AL <- fe_reg_tidy %>%
+  filter(term == "(Intercept)") %>%
+  pull(estimate)
+
+MD_AL_diff <- fe_reg_tidy %>%
+  filter(term == "factor(state)MARYLAND") %>%
+  pull(estimate)
+
+MD_AL_diff
+```
+
+### Part G
+
+Now try using the `feols()` command (from the `fixest` package), which de-means the data, and make sure you get the same results as Part E. Do you get the same marginal effect of `unemployrate` on `appspc`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+demeaned<-feols(appspc~unemployrate|factor(state),data=pc)
+tidy(demeaned)
+```
+
+### Part H
+
+Now also include *year* fixed effects in your regression, using the dummy variable method. Interpret the marginal effect of `unemployrate` on `appspc`. How did it change?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+TWFE_reg <- lm(appspc ~ unemployrate + factor(state) + factor(year), data = pc)
+summary(TWFE_reg)
+```
+
+### Part I
+
+What would be the predicted number of applications in Maryland in 2011 at an unemployment rate of 5%?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part J
+
+Now try using the `feols()` command, which de-means the data, and make sure you get the same results as Part H. Do you get the same marginal effect of `unemployrate` on `appspc`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part K
+
+Can there still be endogeneity in this model? Give some examples.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+### Part L
+
+Create a nice regression table (using `modelsummary`) for comparison of the regressions in Parts D, G, and J.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+## Question 5 (Difference-in-Differences)
+
+-   [<i class="fas fa-table"></i> `TexasSchools.csv`](http://metricsf22.classes.ryansafner.com/files/data/TexasSchools.csv)
+
+Download and read in `TexasSchools.csv` dataset. If you don't want to download/upload it, you can read it in directly from the url by running this chunk:
+
+```{r}
+# run or edit this chunk
+schools <- read_csv("http://metricsf22.classes.ryansafner.com/files/data/TexasSchools.csv")
+```
+
+Are teachers paid more when school board members are elected "off cycle" when there are not major national political elections (e.g. odd years) than "on cycle?" The argument is that during "off" years, without attention on state or national elections, voters will pay less attention to the election, and teachers can more effectively mobilize for higher pay, versus "on" years where voters are paying more attention. This data comes from Anzia, Sarah (2012), "The Election Timing Effect: Evidence from a Policy Intervention in Texas." *Quarterly Journal of Political Science* 7(3): 277-297, and follows 1,020 Texas school board districts from 2003--2009.
+
+From 2003--2006, all districts elected their school board members off-cycle. A change in Texas policy in 2006 led some, but not all, districts to elect their school board members on-cycle from 2007 onwards.
+
+| Variable      | Description                                                                                                        |
+|-------------------------------|----------------------------------------|
+| `LnAvgSalary` | logged average salary of teachers in district                                                                      |
+| `Year`        | Year                                                                                                               |
+| `OnCycle`     | `=1` if school boards elected on-cycle (e.g. same year as national and state elections), `=0` if elected off-cycle |
+| `pol_freedom` | Political freedom index score (2018) from 1 (least) top 10 (most free)                                             |
+| `CycleSwitch` | `=1` if district switched from off- to on-cycle elections                                                          |
+| `AfterSwitch` | `=1` if year is after 2006                                                                                         |
+
+### Part A
+
+Run a pooled regression model of `LnAvgSalary` on `OnCycle`. Write the estimated regression equation, and interpret the coefficient on `OnCycle.` Are there any sources of bias (consider in particular the argument in the question prompt)?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part B
+
+Some schools decided to switch to an on-cycle election after 2006. Consider this, `CycleSwitch` the "treatment." Create a variable to indicate post-treatment years (i.e. years after 2006). Call it `After`. Create a second, *interaction* variable to capture the interaction effect between those districts that *switched*, and *after* the treatment.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part C
+
+Now estimate a difference-in-difference model with your variables in Part B: `CycleSwitch` is the treatment variable, `After` is your post-treatment indicator, and add an *interaction* variable to capture the interaction effect between those districts that *switched*, and *after* the treatment. Write down the estimated regression equation (to four decimal places).
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part D
+
+Interpret what each coefficient means from Part C.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+### Part E
+
+Using your regression equation in Part C, calculate the expected logged average salary $(Y)$ for districts in Texas:
+
+i.  *Before* the switch that did *not* switch
+ii. *After* the switch that did *not* switch
+iii. *Before* the switch that *did* switch
+iv. *After* the switch that *did* switch
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+### Part F
+
+Confirm your estimates in Part E by finding the mean logged average salary for each of those four groups in the data. (Hint, `filter()` properly then `summarize()`.)
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part G
+
+Write out the difference-in-difference equation, and calculate the difference-in-difference. Make sure it matches your estimate from the regression.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+### Part H
+
+Can we say anything about the types of districts that switched? Can we say anything about all salaries in the districts in the years after the switch?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+### Part I
+
+Now let's generalize the diff-in-diff model. Instead of the treatment and post-treatment dummies, use district-and year-fixed effects and the interaction term. Interpret the coefficient on the interaction term.
+
+This is doable with the dummy variable method, but there will be a *lot* of dummies! I suggest using `feols()` from the `fixest` package.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part J
+
+Create a nice regression table (using `modelsummary`) for comparison of the regressions in Parts A, C, and I.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+## Question 6 (Instrumental Variables)
+
+### Part A
+
+-   [<i class="fas fa-table"></i> `RainIV.csv`](http://metricsf22.classes.ryansafner.com/files/data/RainIV.csv)
+
+Download and read in `RainIV.csv` dataset. If you don't want to download/upload it, you can read it in directly from the url by running this chunk:
+
+```{r}
+# run or edit this chunk
+ivrain <- read_csv("http://metricsf22.classes.ryansafner.com/files/data/RainIV.csv")
+```
+
+Does economic growth reduce the odds of civil conflict? Consider data on 41 African countries between 1981-1999. Below are key variables (among others in the data):
+
+| Variable                | Description                                                                                            |
+|-------------------------------|----------------------------------------|
+| `Internalconflict`      | `=1` if civil war (\<25 deaths), else `=0`                                                             |
+| `LaggedGDPGrowth`       | GDP Growth rate from previous year                                                                     |
+| `LagggedRainfallGrowth` | Change (in mm) of rain from previous year                                                              |
+| `InitialGDP`            | GDP per capita (1979)                                                                                  |
+| `Democracy`             | Polity II score                                                                                        |
+| `country_name`          | Country name                                                                                           |
+| `country_code`          | Three letter ISO country code                                                                          |
+| `year`                  | Year                                                                                                   |
+| `pop`                   | Population                                                                                             |
+| `Mountains`             | Percentage of territory that is mountainous terrain                                                    |
+| `EthnicFrac`            | Ethnic fractionalization index (probability two random individuals are NOT from the same ethnic group) |
+| `ReligiousFrac`         | Religious fractionalization index (probability two random individuals are NOT from the same religion)  |
+
+### Part A
+
+Make a scatterplot between `Internalconflict` (as `y`) and `LaggedGDPGrowth` (as `x`), and add a regression line.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part B
+
+Run a regression of Internalconflict`on`LaggedGDPGrowth.\` Note that since $Y$ is a dummy variable, $\beta_1$ is the probability of internal conflict in country $i$ at time $t$.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part C
+
+Run another regression, adding in `LaggedGDPGrowth`, `InitialGDP`, `Democracy`, `Mountains` `EthnicFrac`, and `ReligiousFrac` as controls. What happens to the marginal effect of `LaggedGDPGrowth`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part D
+
+Now let's consider `LaggedRainfallGrowth` as a potential instrument for `LaggedGDPGrowth`. First, check the correlations between `InternalConflict`, `LaggedGDPGrowth` and `LaggedRainfallGrowth`.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part E
+
+Now let's consider if `LaggedRainfallGrowth` is a **relevant** instrument (the "inclusion condition") by running the *first stage* regression of `LaggedGDPGrowth` on `LaggedRainfallGrowth` and the rest of the controls from part C. Is the OLS estimate on `LaggedRainfallGrowth` statistically significant?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part F
+
+There is no statistical test for whether `LaggedRainfallGrowth` is exogenous (the "exclusion condition"). Do you think it is plausible that `LaggedRainfallGrowth` is uncorrelated with the error term; that is, with any other factors that cause conflict; and that it **only** affects conflict through economic growth?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+### Part G
+
+Extract and save the fitted values of your first stage regression from part E. Now run the *second stage* regression by using the fitted values of `LaggedGDPGrowth` and the control variables from parts C and E. What is the marginal effect of `LaggedGDPGrowth` on `InternalConflict`?
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part H
+
+Now run the same regression using `feols()` from the `fixest` package.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```
+
+### Part I
+
+Make a nice regression table using `modelsummary()` using your results from Parts B, G, and H.
+
+<!--WRITE YOUR ANSWERS BELOW -->
+
+```{r}
+# write your code in this chunk
+```

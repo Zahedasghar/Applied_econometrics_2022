@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Problem Set</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="your-name_problem-set-6_files/libs/clipboard/clipboard.min.js"></script>
+<script src="your-name_problem-set-6_files/libs/quarto-html/quarto.js"></script>
+<script src="your-name_problem-set-6_files/libs/quarto-html/popper.min.js"></script>
+<script src="your-name_problem-set-6_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="your-name_problem-set-6_files/libs/quarto-html/anchor.min.js"></script>
+<link href="your-name_problem-set-6_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="your-name_problem-set-6_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="your-name_problem-set-6_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="your-name_problem-set-6_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="your-name_problem-set-6_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Problem Set</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="section" class="level2 centered" data-background-color="#447099">
+<h2 class="centered anchored" data-background-color="#447099" data-anchor-id="section"></h2>
+<p><span class="custom-title">Assignment with viva</span></p>
+<p><span class="custom-author">Dr.&nbsp;Zahid Asghar <br> Professor of Economics</span></p>
+<p><span class="custom-institution"><a href="mailto:zasghar@qau.edu.pk"><i class="fa fa-paper-plane fa-fw"></i>zasghar@qau.edu.pk</a> <br> <a href="https://github.com/zahedasghar"><i class="fa fa-github fa-fw"></i>zahedasghar</a><br> <a href="https://QMR.zahidasghar.com"> <i class="fa fa-globe fa-fw"></i>zahidasghar.com</a><br></span></p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This assignment will be submitted in a group and viva will be held.</p>
+</div>
+</div>
+</section>
+<section id="theory-and-concepts" class="level1">
+<h1>Theory and Concepts</h1>
+<section id="question-1" class="level2">
+<h2 class="anchored" data-anchor-id="question-1">Question 1</h2>
+<p>In your own words, describe what <em>fixed effects</em> are, when we can use them, and how they remove endogeneity.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="question-2" class="level2">
+<h2 class="anchored" data-anchor-id="question-2">Question 2</h2>
+<p>In your own words, describe the logic of a <em>difference-in-difference</em> model: what is it comparing against what, and how does it estimate the effect of treatment? What assumption must be made about the treatment and control group for the model to be valid?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="question-3" class="level2">
+<h2 class="anchored" data-anchor-id="question-3">Question 3</h2>
+<p>In your own words, describe the logic of an <em>instrumental variables</em> model: how does this approach identify the causal effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span>? What makes for a valid instrument? When using a Two-Stage Least Squares approach, what is estimated at each stage?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+</section>
+<section id="r-questions" class="level1">
+<h1>R Questions</h1>
+<p>Answer the following questions using <code>R</code>. When necessary, please write answers in the same document (rendered to <code>html</code> or <code>pdf</code>, typed <code>.doc(x)</code>, or handwritten) as your answers to the above questions. Be sure to include (email or print an <code>.R</code> file, or show in your rendered quarto document) your code and the outputs of your code with the rest of your answers.</p>
+<section id="question-4-fixed-effects" class="level2">
+<h2 class="anchored" data-anchor-id="question-4-fixed-effects">Question 4 (Fixed Effects)</h2>
+<ul>
+<li><a href="http://metricsf22.classes.ryansafner.com/files/data/PeaceCorps.csv"><i class="fas fa-table"></i> <code>PeaceCorps.csv</code></a></li>
+</ul>
+<p>Download and read in <code>PeaceCorps.csv</code> dataset.</p>
+<p>How do people respond to changes in economic conditions? Are they more likely to pursue public service when private sector jobs are scarce? This dataset contains variables at the U.S. State (&amp; D.C.) level:</p>
+<table class="table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 77%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>state</code></td>
+<td>U.S. State</td>
+</tr>
+<tr class="even">
+<td><code>year</code></td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td><code>appspc</code></td>
+<td>Applications to the Peace Corps (per capita) in State</td>
+</tr>
+<tr class="even">
+<td><code>unemployrate</code></td>
+<td>State unemployment rate</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Do more people apply to the Peace Corps when unemployment increases (and reduces other opportunities)?</strong></p>
+<section id="part-a" class="level3">
+<h3 class="anchored" data-anchor-id="part-a">Part A</h3>
+<p>Before looking at the data, what does your economic intuition tell you? Explain your hypothesis.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-b" class="level3">
+<h3 class="anchored" data-anchor-id="part-b">Part B</h3>
+<p>To get the hang of the data we’re working with, <code>count</code> (separately) the number of <code>state</code>s, and the number of <code>year</code>s. Get the number of <code>n_distinct()</code> <code>state</code>s and <code>year</code>s (Do these inside the <code>summarize()</code> command), as well as the <code>distinct()</code> values of each (don’t use the <code>summarize()</code> command for this part).</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-c" class="level3">
+<h3 class="anchored" data-anchor-id="part-c">Part C</h3>
+<p>Create a scatterplot of <code>appspc</code> (Y) on <code>unemployrate</code> (X). Which State is an outlier? How would this affect the pooled regression estimates? Create a <em>second</em> scatterplot that does not include this State.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-d" class="level3">
+<h3 class="anchored" data-anchor-id="part-d">Part D</h3>
+<p>Run two <em>pooled</em> regressions, one with the outliers, and one without them. Write out the estimated regression equation for each. Interpret the coefficient, and comment on how it changes between the two regressions.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-e" class="level3">
+<h3 class="anchored" data-anchor-id="part-e">Part E</h3>
+<p>Now run a regression with State fixed effects using the dummy variable method. (Ensure that <code>state</code> is a factor variable, and insert in the regression. You can either <code>mutate()</code> it into a <code>factor</code> beforehand, or just do <code>factor(state)</code> in the <code>lm</code> command.) Interpret the marginal effect of <code>unemployrate</code> on <code>appspc</code>. How did it change?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-f" class="level3">
+<h3 class="anchored" data-anchor-id="part-f">Part F</h3>
+<p>Find the coefficient for Maryland and interpret it. How many applications per capita does Maryland have?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-g" class="level3">
+<h3 class="anchored" data-anchor-id="part-g">Part G</h3>
+<p>Now try using the <code>feols()</code> command (from the <code>fixest</code> package), which de-means the data, and make sure you get the same results as Part E. Do you get the same marginal effect of <code>unemployrate</code> on <code>appspc</code>?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-h" class="level3">
+<h3 class="anchored" data-anchor-id="part-h">Part H</h3>
+<p>Now also include <em>year</em> fixed effects in your regression, using the dummy variable method. Interpret the marginal effect of <code>unemployrate</code> on <code>appspc</code>. How did it change?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-i" class="level3">
+<h3 class="anchored" data-anchor-id="part-i">Part I</h3>
+<p>What would be the predicted number of applications in Maryland in 2011 at an unemployment rate of 5%?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-j" class="level3">
+<h3 class="anchored" data-anchor-id="part-j">Part J</h3>
+<p>Now try using the <code>feols()</code> command, which de-means the data, and make sure you get the same results as Part H. Do you get the same marginal effect of <code>unemployrate</code> on <code>appspc</code>?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-k" class="level3">
+<h3 class="anchored" data-anchor-id="part-k">Part K</h3>
+<p>Can there still be endogeneity in this model? Give some examples.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-l" class="level3">
+<h3 class="anchored" data-anchor-id="part-l">Part L</h3>
+<p>Create a nice regression table (using <code>modelsummary</code>) for comparison of the regressions in Parts D, G, and J.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+</section>
+<section id="question-5-difference-in-differences" class="level2">
+<h2 class="anchored" data-anchor-id="question-5-difference-in-differences">Question 5 (Difference-in-Differences)</h2>
+<ul>
+<li><a href="http://metricsf22.classes.ryansafner.com/files/data/TexasSchools.csv"><i class="fas fa-table"></i> <code>TexasSchools.csv</code></a></li>
+</ul>
+<p>Download and read in <code>TexasSchools.csv</code> dataset.</p>
+<p>Are teachers paid more when school board members are elected “off cycle” when there are not major national political elections (e.g.&nbsp;odd years) than “on cycle?” The argument is that during “off” years, without attention on state or national elections, voters will pay less attention to the election, and teachers can more effectively mobilize for higher pay, versus “on” years where voters are paying more attention. This data comes from Anzia, Sarah (2012), “The Election Timing Effect: Evidence from a Policy Intervention in Texas.” <em>Quarterly Journal of Political Science</em> 7(3): 277-297, and follows 1,020 Texas school board districts from 2003–2009.</p>
+<p>From 2003–2006, all districts elected their school board members off-cycle. A change in Texas policy in 2006 led some, but not all, districts to elect their school board members on-cycle from 2007 onwards.</p>
+<table class="table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>LnAvgSalary</code></td>
+<td>logged average salary of teachers in district</td>
+</tr>
+<tr class="even">
+<td><code>Year</code></td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td><code>OnCycle</code></td>
+<td><code>=1</code> if school boards elected on-cycle (e.g.&nbsp;same year as national and state elections), <code>=0</code> if elected off-cycle</td>
+</tr>
+<tr class="even">
+<td><code>pol_freedom</code></td>
+<td>Political freedom index score (2018) from 1 (least) top 10 (most free)</td>
+</tr>
+<tr class="odd">
+<td><code>CycleSwitch</code></td>
+<td><code>=1</code> if district switched from off- to on-cycle elections</td>
+</tr>
+<tr class="even">
+<td><code>AfterSwitch</code></td>
+<td><code>=1</code> if year is after 2006</td>
+</tr>
+</tbody>
+</table>
+<section id="part-a-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-a-1">Part A</h3>
+<p>Run a pooled regression model of <code>LnAvgSalary</code> on <code>OnCycle</code>. Write the estimated regression equation, and interpret the coefficient on <code>OnCycle.</code> Are there any sources of bias (consider in particular the argument in the question prompt)?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-b-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-b-1">Part B</h3>
+<p>Some schools decided to switch to an on-cycle election after 2006. Consider this, <code>CycleSwitch</code> the “treatment.” Create a variable to indicate post-treatment years (i.e.&nbsp;years after 2006). Call it <code>After</code>. Create a second, <em>interaction</em> variable to capture the interaction effect between those districts that <em>switched</em>, and <em>after</em> the treatment.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-c-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-c-1">Part C</h3>
+<p>Now estimate a difference-in-difference model with your variables in Part B: <code>CycleSwitch</code> is the treatment variable, <code>After</code> is your post-treatment indicator, and add an <em>interaction</em> variable to capture the interaction effect between those districts that <em>switched</em>, and <em>after</em> the treatment. Write down the estimated regression equation (to four decimal places).</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-d-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-d-1">Part D</h3>
+<p>Interpret what each coefficient means from Part C.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-e-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-e-1">Part E</h3>
+<p>Using your regression equation in Part C, calculate the expected logged average salary <span class="math inline">\((Y)\)</span> for districts in Texas:</p>
+<ol type="i">
+<li><em>Before</em> the switch that did <em>not</em> switch</li>
+<li><em>After</em> the switch that did <em>not</em> switch</li>
+<li><em>Before</em> the switch that <em>did</em> switch</li>
+<li><em>After</em> the switch that <em>did</em> switch</li>
+</ol>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-f-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-f-1">Part F</h3>
+<p>Confirm your estimates in Part E by finding the mean logged average salary for each of those four groups in the data. (Hint, <code>filter()</code> properly then <code>summarize()</code>.)</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-g-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-g-1">Part G</h3>
+<p>Write out the difference-in-difference equation, and calculate the difference-in-difference. Make sure it matches your estimate from the regression.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-h-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-h-1">Part H</h3>
+<p>Can we say anything about the types of districts that switched? Can we say anything about all salaries in the districts in the years after the switch?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-i-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-i-1">Part I</h3>
+<p>Now let’s generalize the diff-in-diff model. Instead of the treatment and post-treatment dummies, use district-and year-fixed effects and the interaction term. Interpret the coefficient on the interaction term.</p>
+<p>This is doable with the dummy variable method, but there will be a <em>lot</em> of dummies! I suggest using <code>feols()</code> from the <code>fixest</code> package.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-j-1" class="level3">
+<h3 class="anchored" data-anchor-id="part-j-1">Part J</h3>
+<p>Create a nice regression table (using <code>modelsummary</code>) for comparison of the regressions in Parts A, C, and I.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+</section>
+<section id="question-6-instrumental-variables" class="level2">
+<h2 class="anchored" data-anchor-id="question-6-instrumental-variables">Question 6 (Instrumental Variables)</h2>
+<section id="part-a-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-a-2">Part A</h3>
+<ul>
+<li><a href="http://metricsf22.classes.ryansafner.com/files/data/RainIV.csv"><i class="fas fa-table"></i> <code>RainIV.csv</code></a></li>
+</ul>
+<p>Download and read in <code>RainIV.csv</code> dataset.</p>
+<p>Does economic growth reduce the odds of civil conflict? Consider data on 41 African countries between 1981-1999. Below are key variables (among others in the data):</p>
+<table class="table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Internalconflict</code></td>
+<td><code>=1</code> if civil war (&lt;25 deaths), else <code>=0</code></td>
+</tr>
+<tr class="even">
+<td><code>LaggedGDPGrowth</code></td>
+<td>GDP Growth rate from previous year</td>
+</tr>
+<tr class="odd">
+<td><code>LagggedRainfallGrowth</code></td>
+<td>Change (in mm) of rain from previous year</td>
+</tr>
+<tr class="even">
+<td><code>InitialGDP</code></td>
+<td>GDP per capita (1979)</td>
+</tr>
+<tr class="odd">
+<td><code>Democracy</code></td>
+<td>Polity II score</td>
+</tr>
+<tr class="even">
+<td><code>country_name</code></td>
+<td>Country name</td>
+</tr>
+<tr class="odd">
+<td><code>country_code</code></td>
+<td>Three letter ISO country code</td>
+</tr>
+<tr class="even">
+<td><code>year</code></td>
+<td>Year</td>
+</tr>
+<tr class="odd">
+<td><code>pop</code></td>
+<td>Population</td>
+</tr>
+<tr class="even">
+<td><code>Mountains</code></td>
+<td>Percentage of territory that is mountainous terrain</td>
+</tr>
+<tr class="odd">
+<td><code>EthnicFrac</code></td>
+<td>Ethnic fractionalization index (probability two random individuals are NOT from the same ethnic group)</td>
+</tr>
+<tr class="even">
+<td><code>ReligiousFrac</code></td>
+<td>Religious fractionalization index (probability two random individuals are NOT from the same religion)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="part-a-3" class="level3">
+<h3 class="anchored" data-anchor-id="part-a-3">Part A</h3>
+<p>Make a scatterplot between <code>Internalconflict</code> (as <code>y</code>) and <code>LaggedGDPGrowth</code> (as <code>x</code>), and add a regression line.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-b-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-b-2">Part B</h3>
+<p>Run a regression of Internalconflict<code>on</code>LaggedGDPGrowth.` Note that since <span class="math inline">\(Y\)</span> is a dummy variable, <span class="math inline">\(\beta_1\)</span> is the probability of internal conflict in country <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span>.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-c-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-c-2">Part C</h3>
+<p>Run another regression, adding in <code>LaggedGDPGrowth</code>, <code>InitialGDP</code>, <code>Democracy</code>, <code>Mountains</code> <code>EthnicFrac</code>, and <code>ReligiousFrac</code> as controls. What happens to the marginal effect of <code>LaggedGDPGrowth</code>?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-d-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-d-2">Part D</h3>
+<p>Now let’s consider <code>LaggedRainfallGrowth</code> as a potential instrument for <code>LaggedGDPGrowth</code>. First, check the correlations between <code>InternalConflict</code>, <code>LaggedGDPGrowth</code> and <code>LaggedRainfallGrowth</code>.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-e-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-e-2">Part E</h3>
+<p>Now let’s consider if <code>LaggedRainfallGrowth</code> is a <strong>relevant</strong> instrument (the “inclusion condition”) by running the <em>first stage</em> regression of <code>LaggedGDPGrowth</code> on <code>LaggedRainfallGrowth</code> and the rest of the controls from part C. Is the OLS estimate on <code>LaggedRainfallGrowth</code> statistically significant?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-f-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-f-2">Part F</h3>
+<p>There is no statistical test for whether <code>LaggedRainfallGrowth</code> is exogenous (the “exclusion condition”). Do you think it is plausible that <code>LaggedRainfallGrowth</code> is uncorrelated with the error term; that is, with any other factors that cause conflict; and that it <strong>only</strong> affects conflict through economic growth?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-g-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-g-2">Part G</h3>
+<p>Extract and save the fitted values of your first stage regression from part E. Now run the <em>second stage</em> regression by using the fitted values of <code>LaggedGDPGrowth</code> and the control variables from parts C and E. What is the marginal effect of <code>LaggedGDPGrowth</code> on <code>InternalConflict</code>?</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-h-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-h-2">Part H</h3>
+<p>Now run the same regression using <code>feols()</code> from the <code>fixest</code> package.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+<section id="part-i-2" class="level3">
+<h3 class="anchored" data-anchor-id="part-i-2">Part I</h3>
+<p>Make a nice regression table using <code>modelsummary()</code> using your results from Parts B, G, and H.</p>
+<!--WRITE YOUR ANSWERS BELOW -->
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

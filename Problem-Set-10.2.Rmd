@@ -1,0 +1,120 @@
+---
+title: "Problem 10.2"
+author: "Beenish Ali, Ruba Khan, Zara  Shamim"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#install.packages("xlsx")
+setwd("D:/R work")
+library(readxl)
+getwd()
+inde <- read_excel("D:/R work/income_democracy.xlsx")
+str(inde)
+attach(inde)
+```
+
+## Part (a)
+
+Is the data set a balanced panel?
+
+***The dataset is unbalanced because data are available over different years for different countries.***
+
+```{r}
+## Check if data are balanced
+is.pbalanced(inde, index=c('country','year'))
+```
+
+## Part (b)
+
+i\. What are the minimum and maximum values of dem_ind in the data set? What are the mean and standard deviation of dem_ind in the data set? What are the 10th, 25th, 50th, 75th, and 90th percentiles of its distribution?
+
+```{r}
+summary(dem_ind)
+```
+
+```{r}
+sd(dem_ind, na.rm=TRUE)
+```
+
+
+```{r}
+quantile(dem_ind, probs=c(0.1, 0.25, 0.5, 0.75, 0.9), na.rm=TRUE)
+```
+
+(ii) What is the value of dem_ind for the United States in 2000? Averaged over all years in the data set?
+```{r}
+us2000 <- subset(inde, country=="United States" & year=="2000")  
+
+us2000$dem_ind  # dem_ind for US in 2000
+```
+
+
+```{r}
+us <- subset(inde, country=="United States")  # US data 1960-2000
+
+mean(us$dem_ind)  # averaged US dem_ind over 1960-2000
+```
+
+***The value for the U.S. in 2000 is dem_ind=1.0. The average for the nine years in the sample is 0.99.***
+
+(iii) What is the value of dem_ind for Libya in 2000? Averaged over all years in the data set?
+```{r}
+libya2000 <- subset(inde, country=="Libya" & year=="2000") # Libya data 2000
+libya2000$dem_ind    # dem_ind for Libya in 2000
+```
+
+
+```{r}
+libya <- subset(inde, country=="Libya")  # Libya data 1960-2000
+
+mean(libya$dem_ind)  # averaged Libya dem_ind over 1960-2000
+```
+***The value for Libya in 2000 is dem_ind=0.0. The average for the nine years in the sample is 0.11.***
+
+(iv) List five countries with an average value of dem_ind greater than 0.95; less than 0.10; and between 0.3 and 0.7.
+```{r}
+#(b.iv) Countries with low, mid, and high dem_ind
+    # (b.iv.1) Remove rows with NA in Column "dem_ind"
+inde.c <- inde[complete.cases(inde[ , c('dem_ind')]), ]
+    
+    # (b.iv.2) Compute average dem_ind for each country
+inde.c$ave_dem <- ave(inde.c$dem_ind, inde.c$country)
+
+    # (b.iv.3) Countries with high averaged dem_ind: ave_dem>0.95
+list.high <- subset(inde.c, ave_dem>0.95)$country
+unique(list.high)
+```
+
+
+```{r}
+# (b.iv.4) Countries with low averaged dem_ind: ave_dem<0.1
+list.low <- subset(inde.c, ave_dem<0.1)$country
+unique(list.low)
+```
+
+
+```{r}
+#(b.iv.5) Countries with mid averaged dem_ind: 0.3<ave_dem<0.7
+list.mid <- subset(inde.c, 0.3<ave_dem & ave_dem<0.7)$country
+unique(list.mid)
+```
+
+## Part (c)
+
+Regress dem_ind on log_gdppc. Use standard errors that are clustered by country.
+
+*To obtain the clustered standard errors, use command vcovCL. Note that the default "type" in "vcovCL" is "HC1" for lm objects and "HC0" otherwise.*
+
+```{r}
+# OLS regression with clustered standard errors
+fit.c <- lm(dem_ind~log_gdppc, data=inde)
+summary(fit.c)   # results with unclustered standard errors
+```
+
+
+```{r}
+
+```
+

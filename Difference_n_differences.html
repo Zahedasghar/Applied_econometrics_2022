@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Zahid Asghar   School of Economics, QAU, Islamabad">
+<meta name="dcterms.date" content="2022-11-14">
+
+<title>Difference in Differences Estimators Lab</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="Difference_n_differences_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Difference_n_differences_files/libs/quarto-html/quarto.js"></script>
+<script src="Difference_n_differences_files/libs/quarto-html/popper.min.js"></script>
+<script src="Difference_n_differences_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Difference_n_differences_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Difference_n_differences_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Difference_n_differences_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Difference_n_differences_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Difference_n_differences_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Difference_n_differences_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+<script src="Difference_n_differences_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="Difference_n_differences_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Difference in Differences Estimators Lab</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Zahid Asghar<br><br> School of Economics, QAU, Islamabad </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 14, 2022</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<p>Purpose of this lab is to understand the concept of DiD method and its usefulness in R. For more details, one may visit <a href="https://github.com/tyleransom/EconometricsLabs/blob/master/lab17.Rmd">Tyler Rasom</a></p>
+<section id="upload-relevant-librarires" class="level2">
+<h2 class="anchored" data-anchor-id="upload-relevant-librarires">Upload relevant librarires</h2>
+<p>Open a quarto document or R script in <code>RStudio</code>, which is now named as <code>Posit</code> and run these libraries. If some <code>library()</code> does not work, make sure you have uploaded the relevant <code>package</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add names of group members HERE</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: 'magrittr'</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from 'package:purrr':</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="do">##     set_names</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from 'package:tidyr':</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="do">##     extract</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Please cite as:</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables.</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  R package version 5.2.3. https://CRAN.R-project.org/package=stargazer</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clubSandwich)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Registered S3 method overwritten by 'clubSandwich':</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   method    from    </span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="do">##   bread.mlm sandwich</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="load-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="load-the-data">Load the data</h3>
+<p>We are using data analysed by <span class="citation" data-cites="meyer_al1995">@meyer_al1995</span> and is available from <code>wooldridge</code> package and filter only to those living in Knetucky:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(injury)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&lt;&gt;%</span> <span class="fu">filter</span>(ky<span class="sc">==</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="policy-setting" class="level3">
+<h3 class="anchored" data-anchor-id="policy-setting">Policy setting</h3>
+<p>In 1980, Kentucky raised its cap on weekly earnings that were covered by worker’s compensation.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> The outcome variable is <code>ldurat</code>, which is the log duration (in weeks) of worker’s compensation benefits. The policy was such that the cap increase did not affect low-earnings workers, but did affect high-earnings workers. Thus, low-earnings workers serve as the control group, while high-earnings workers serve as the treatment group.</p>
+<p>We are interested to know if the policy caused workers to spend more time out of work. If benefits are not generous enough, then workers may sue the company for on-the-job injuries. On the other hand, benefits that are too generous may induce workers to be more reckless on the job, or to claim that off-the-job injuries were incurred while at work.</p>
+<p><a href="zahidasghar.com">zahid asghar</a></p>
+</section>
+<section id="summary-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="summary-statistics">Summary statistics</h3>
+<p>In difference-in-differences settings, it is often helpful to see if there even is a policy effect. Let’s compute the difference-in-differences (with no regression) based on the pre- and post-means for the treatment and control groups</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(afchnge,highearn) <span class="sc">%&gt;%</span> <span class="fu">summarize</span>(<span class="at">mean.ldurat =</span> <span class="fu">mean</span>(ldurat))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">## `summarise()` has grouped output by 'afchnge'. You can override using the</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">## `.groups` argument.</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 4 × 3</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## # Groups:   afchnge [2]</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   afchnge highearn mean.ldurat</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">##     &lt;int&gt;    &lt;int&gt;       &lt;dbl&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 1       0        0        1.13</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 2       0        1        1.38</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 3       1        0        1.13</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 4       1        1        1.58</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li>What is the difference in the differences? What is its interpretation? (Hint: recall that the dependent variable is logged)</li>
+</ol>
+</section>
+</section>
+<section id="difference-in-differences-regression" class="level2">
+<h2 class="anchored" data-anchor-id="difference-in-differences-regression">Difference-in-differences regression</h2>
+<p>The basic regression model to analyze the policy’s impact is <span class="math inline">\(log(durat) = \beta_0 + \delta_0 afchnge + \beta_1 highearn + \delta_1 afchnge \cdot highearn + u\)</span></p>
+<p>Estimate this model, calling it <code>est.did</code>. I suppress the code here, since this should be old hat by now. (Hint: recall that, for two dummy variables <code>x1</code> and <code>x2</code>, putting <code>x1*x2</code> in the <code>lm()</code> formula will include in the formula each dummy and the interaction of the two.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>est.did <span class="ot">&lt;-</span> <span class="fu">lm</span>(ldurat <span class="sc">~</span> afchnge<span class="sc">*</span>highearn, <span class="at">data=</span>df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li>Verify that your estimated <span class="math inline">\(\hat{\delta}_1\)</span> is the same as your answer in (1). Is the effect significant?</li>
+</ol>
+</section>
+<section id="include-additional-regressors" class="level2">
+<h2 class="anchored" data-anchor-id="include-additional-regressors">Include additional regressors</h2>
+<p>We might want to control for other aspects of our workers. For example, perhaps claims made by construction or manufacturing workers tend to have longer duration than claims made workers in other industries. Or maybe those claiming back injuries tend to have lonter claims than those claiming head injuries. One may also want to control for worker demographics such as gender, marital status, and age.</p>
+<p>Estimate an expanded version of the basic regression model, where the following additional variables are included:</p>
+<ul>
+<li><code>male</code></li>
+<li><code>married</code></li>
+<li>Quadratic in <code>age</code></li>
+<li><code>hosp</code> (1 = hospitalized)</li>
+<li><code>indust</code> (1 = manuf, 2 = construc, 3 = other)</li>
+<li><code>injtype</code> (1-8; categories for different types of injury)</li>
+<li><code>lprewage</code> (log of wage prior to filing a claim)</li>
+</ul>
+<p><strong>Be sure to format <code>indust</code> and <code>injtyp</code> as factors before proceeding.</strong> Call your model <code>est.did.x</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&lt;&gt;%</span> <span class="fu">mutate</span>(<span class="at">indust=</span><span class="fu">as.factor</span>(indust), <span class="at">injtype=</span><span class="fu">as.factor</span>(injtype))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>est.did.x <span class="ot">&lt;-</span> <span class="fu">lm</span>(ldurat <span class="sc">~</span> afchnge<span class="sc">*</span>highearn <span class="sc">+</span> male <span class="sc">+</span> married <span class="sc">+</span> age <span class="sc">+</span> <span class="fu">I</span>(age<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> injtype <span class="sc">+</span> lprewage <span class="sc">+</span> indust, <span class="at">data=</span>df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We now view results from <code>modelsummary</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="fu">list</span>(est.did,est.did.x),<span class="at">estimate =</span> <span class="st">"{estimate}{stars}"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_omit =</span> <span class="st">".*"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:center;"> Model 1 </th>
+   <th style="text-align:center;"> Model 2 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:center;"> 1.126*** </td>
+   <td style="text-align:center;"> −1.559*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.031) </td>
+   <td style="text-align:center;"> (0.464) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> afchnge </td>
+   <td style="text-align:center;"> 0.008 </td>
+   <td style="text-align:center;"> 0.017 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.045) </td>
+   <td style="text-align:center;"> (0.045) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> highearn </td>
+   <td style="text-align:center;"> 0.256*** </td>
+   <td style="text-align:center;"> −0.160+ </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.047) </td>
+   <td style="text-align:center;"> (0.097) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> afchnge × highearn </td>
+   <td style="text-align:center;"> 0.191** </td>
+   <td style="text-align:center;"> 0.215** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;"> (0.069) </td>
+   <td style="text-align:center;"> (0.069) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> male </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> −0.071 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.046) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> married </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.041 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.041) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> age </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.025** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.008) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> I(age^2) </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.000* </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.000) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> injtype2 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.775*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.156) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> injtype3 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.346*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.092) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> injtype4 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.632*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.101) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> injtype5 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.493*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.093) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> injtype6 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.392*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.093) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> injtype7 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.773*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.206) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> injtype8 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.510*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.129) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> lprewage </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.314*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.088) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> indust2 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.262*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.059) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> indust3 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> 0.182*** </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (0.041) </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<ol start="3" type="1">
+<li><p>How different is your estimate of <span class="math inline">\(\hat{\delta}_1\)</span> from that in (2)?</p></li>
+<li><p>Do you see any interesting patterns among the <span class="math inline">\(x\)</span>’s in predicting log duration of benefits?</p></li>
+</ol>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1" role="doc-endnote"><p>Worker’s compensation is “a form of insurance providing wage replacement and medical benefits to employees injured in the course of employment in exchange for mandatory relinquishment of the employee’s right to sue their employer for … negligence.” (<a href="https://en.wikipedia.org/wiki/Workers%27_compensation">Wikipedia</a>)<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
