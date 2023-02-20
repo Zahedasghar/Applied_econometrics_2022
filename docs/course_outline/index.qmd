@@ -5,8 +5,8 @@ format:
     theme: [default,ryan.scss]
 editor: visual
 ---
-
-## EC-640 : Topics in Applied Economics
+https://github.com/hhsievertsen/applied_econ_with_r
+## Applied Economics with R
 
 ::: columns
 ::: {.column width="30%"}
@@ -22,25 +22,21 @@ Quaid-i-Azam University, Islamabad
 :::
 :::
 
-## Course Overview
+## Overview
 
-This course is designed to introduce [students to focus on research design]{.yellow}, [thinking clearly with data]{.yellow} and apply techniques through computer-based exercises and learn to replicate the econometric results of published economic articles using new data and econometric tools. Philosophy of the course will be to enable students doing economics by learning concepts through computer assisted tools. [Main software for the course will be R]{.yellow}, STATA do files will also be provided for many of the topics. This course will
+This is a comprehensive course based on empirical economics with R aimed at helping researchers to learn not only analysis but with speed, efficiency, reproducibility and sharing objectives.This is designed to introduce [students to focus on research design]{.yellow}, [thinking clearly with data]{.yellow} and learn by practice. **Doing Economics** by CORE exercises in R (pdf/html document generated in R) will be the requirement for research students to get a pass in the course. Emphasis during the eight weeks comprehensive workshop will be
 
--   Emphasis on understanding theory through applications and problem solving, rather than mathematical theorems and complex proofs
+-   Data wrangling, data visualization and data tables
 
--   Working as a learning community to improve statistical and econometric skills necessary in the study of economics.
+-   Econometric tools with nice printable format 
 
--   Some of the resources to be used for this course and freely available are listed as follows:
+-   Learning Quarto Markdown Language (R/Python/Julia) for producing beuatiful document with files speaking to files without copy and paste
 
--   [Introduction to Econometrics with R](https://scpoecon.github.io/ScPoEconometrics/index.html)
 
 -   [R code for mastering metrics](https://jrnold.github.io/masteringmetrics/)
 
--   [Mastering metrics: Path from cause to effect](https://www.masteringmetrics.com/)
-
 -   [Econometrics in class-labs](https://tyleransom.github.io/econometricslabs.html)
 
--   [The Effect](theeffectbook.net)
 
 -   [Impact Evaluation in Practice](https://www.worldbank.org/en/programs/sief-trust-fund/publication/impact-evaluation-in-practice)
 

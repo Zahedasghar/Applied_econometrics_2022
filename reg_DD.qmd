@@ -248,7 +248,7 @@ abline(v = 0, lty = 2)
 3.    Bandwidth: As large as possible 
 4.    Sensitive to functional form
 
-::: callout-warning
+::: callout-tips
 Eligibility rule or cutoff should be resistant to manipulation by enumerators, potential beneficiaries, program administrators, or politicians.  
 :::
 

@@ -6,18 +6,17 @@
 <script src="reg_DD_files/libs/quarto-html/tippy.umd.min.js"></script>
 <link href="reg_DD_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="reg_DD_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="reg_DD_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.2.269">
-
-  <meta name="author" content="Zahid Asghar">
-  <meta name="dcterms.date" content="2022-12-12">
-  <title>Regression Discontinuity Design</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="reg_DD_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="reg_DD_files/libs/revealjs/dist/reveal.css">
-  <style>
+<link href="reg_DD_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+<meta name="author" content="Zahid Asghar">
+<title>Regression Discontinuity Design</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+<link rel="stylesheet" href="reg_DD_files/libs/revealjs/dist/reset.css">
+<link rel="stylesheet" href="reg_DD_files/libs/revealjs/dist/reveal.css">
+<style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -94,14 +93,14 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="reg_DD_files/libs/revealjs/dist/theme/quarto.css" id="theme">
-  <link href="reg_DD_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="reg_DD_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="reg_DD_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="reg_DD_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
-  <link href="reg_DD_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
-  <link href="reg_DD_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
-  <style type="text/css">
+<link rel="stylesheet" href="reg_DD_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+<link href="reg_DD_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+<link href="reg_DD_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+<link href="reg_DD_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+<link href="reg_DD_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+<link href="reg_DD_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+<link href="reg_DD_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+<style type="text/css">
 
   .callout {
     margin-top: 1em;
@@ -298,7 +297,7 @@
   }
 
   </style>
-  <style type="text/css">
+<style type="text/css">
     .reveal div.sourceCode {
       margin: 0;
       overflow: auto;
@@ -390,8 +389,7 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-color="#447099" class="quarto-title-block center">
-  <h1 class="title">Regression Discontinuity Design</h1>
+<section id="title-slide" data-background-color="#447099" class="quarto-title-block center"><h1 class="title">Regression Discontinuity Design</h1>
   <p class="subtitle">School of Economics, QAU, Islamabad</p>
 
 <div class="quarto-title-authors">
@@ -402,19 +400,15 @@ Zahid Asghar
 </div>
 </div>
 
-  <p class="date">12/12/22</p>
-</section>
-<section id="outline1" class="slide level2" data-background-color="#447099">
-<h2>Outline<sup>1</sup></h2>
+  <p class="date">2/7/23</p>
+</section><section id="outline1" class="slide level2" data-background-color="#447099"><h2>Outline<sup>1</sup>
+</h2>
 <ul>
 <li><h3 id="introduction-to-regression-discontinuity-designs">Introduction to Regression Discontinuity Designs</h3></li>
 <li><h3 id="sharp-and-fuzzy-regression-discontinuity-designs">Sharp and Fuzzy Regression Discontinuity Designs</h3></li>
 <li><h3 id="simulated-sharp-and-fuzzy-regression-discontinuity-designs-using-r">Simulated Sharp and Fuzzy Regression Discontinuity Designs using R</h3></li>
 <li><h3 id="encourage-the-use-of-this-technique-and-r">Encourage the use of this technique and R</h3></li>
-</ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>These notes are from <a href="https://andrewheiss.com">Andrew Heiss</a> and the books mentioned in the course.</p></li></ol></aside></section>
-<section id="regression-discontinuity-designs-rdd" class="slide level2" data-background-color="#447099">
-<h2>Regression Discontinuity Designs (RDD)</h2>
+</ul><aside><ol class="aside-footnotes"><li id="fn1"><p>These notes are from <a href="https://andrewheiss.com">Andrew Heiss</a> and the books mentioned in the course.</p></li></ol></aside></section><section id="regression-discontinuity-designs-rdd" class="slide level2" data-background-color="#447099"><h2>Regression Discontinuity Designs (RDD)</h2>
 <p>When randomization is not feasible, how can we exploit implementation features of the program to measure its impact?</p>
 <ul>
 <li>Answer: Quasi-experiments - Example: Regression Discontinuity Design.</li>
@@ -422,19 +416,13 @@ Zahid Asghar
 <p><strong><em>Regression discontinuity design</em></strong> (RDD) is an important method that can be used for programs that have a continuous eligibility index with a clearly defined eligibility threshold <span class="pink">(cuttoff score)</span> to determine who is eligible and who is not.</p>
 <ul>
 <li>The regression discontinuity design is a statistical approach that utilizes threshold based decision making to estimate causal estimates of different interventions.</li>
-</ul>
-</section>
-<section id="section" class="slide level2" data-background-color="#447099">
-<h2></h2>
+</ul></section><section id="section" class="slide level2" data-background-color="#447099"><h2></h2>
 <ul>
 <li><p>Regression discontinuity is relatively simple to implement, transparent, and provides “real world” effects of treatments and policies.</p></li>
 <li><p>Graphical presentation and statistical analysis of data.</p></li>
 <li><p>Developed by Psychologists but later on in much use with labor economists</p></li>
 <li><p>Despite frequent use threshold based decision making, regression discontinuity is underutilized.</p></li>
-</ul>
-</section>
-<section id="discontinuity-design" class="slide level2" data-background-color="#447099">
-<h2>Discontinuity Design</h2>
+</ul></section><section id="discontinuity-design" class="slide level2" data-background-color="#447099"><h2>Discontinuity Design</h2>
 <p>Many social programs select beneficiaries using an <span class="pink">index</span> or <span class="pink">score</span></p>
 <div class="columns">
 <div class="column" style="width:30%;">
@@ -453,85 +441,81 @@ Zahid Asghar
 </ul>
 </div>
 </div>
-</section>
-<section id="example-effect-of-fertilizer-program-on-agriculture-production" class="slide level2">
-<h2>Example: <span class="hi-purple">Effect of fertilizer program on agriculture production</span></h2>
+</section><section id="example-effect-of-fertilizer-program-on-agriculture-production" class="slide level2"><h2>Example: <span class="hi-purple">Effect of fertilizer program on agriculture production</span>
+</h2>
 <h3 id="goal"><span class="hi-purple">Goal</span></h3>
 <p><strong>Improve school attendance for poor students</strong></p>
 <h3 id="method"><span class="hi-purple">Method</span></h3>
 <ul>
-<li><strong>Households with a score (Pa) of assets</strong> <span class="math inline">\(\le\)</span> 50 <strong>are <span class="hi-purple">poor</span></strong></li>
-<li><strong>Households with a score (Pa) of assets</strong> <span class="math inline">\(\gt\)</span> 50 <strong>are not poor</strong></li>
+<li>
+<strong>Households with a score (Pa) of assets</strong> <span class="math inline">\(\le\)</span> 50 <strong>are <span class="hi-purple">poor</span></strong>
+</li>
+<li>
+<strong>Households with a score (Pa) of assets</strong> <span class="math inline">\(\gt\)</span> 50 <strong>are not poor</strong>
+</li>
 </ul>
 <h3 id="intervention"><span class="hi-purple">Intervention</span></h3>
 <p><strong>Poor households receive scholarships to send to children to school</strong></p>
-</section>
-<section id="some-more-examples" class="slide level2 hi-purple">
-<h2>Some more examples</h2>
+</section><section id="some-more-examples" class="slide level2 hi-purple"><h2>Some more examples</h2>
 <p><strong>We often apply regression-discontinuity designs in settings with some arbitrary threshold embeded within some bureaucratic decision.</strong></p>
 <ul>
 <li><strong>Large scale manufacturing &gt;15 employees.</strong></li>
 <li><strong>Prisoners are eligible for early parole if some score exceeds a threshold.</strong></li>
 <li><strong>An individual is eligible for Medicare if her age is at least 65.</strong></li>
 <li><strong>You get a ticket if your speed exceeds the speed limit.</strong></li>
-</ul>
-</section>
-<section id="types-of-rdd" class="slide level2">
-<h2><span class="hi-purple">Types of RDD</span></h2>
+</ul></section><section id="types-of-rdd" class="slide level2"><h2><span class="hi-purple">Types of RDD</span></h2>
 <ul>
-<li><p><strong>With regard to Treatment Assignment:</strong></p>
+<li>
+<p><strong>With regard to Treatment Assignment:</strong></p>
 <ul>
-<li><p><span class="pink"><strong>Sharp Design</strong></span>: Where the cut-point perfectly predicts who does/doesn’t receive intervention</p>
+<li>
+<p><span class="pink"><strong>Sharp Design</strong></span>: Where the cut-point perfectly predicts who does/doesn’t receive intervention</p>
 <ul>
 <li>Characteristics cant be perfectly manipulated by invidual</li>
-</ul></li>
+</ul>
+</li>
 <li><p><span class="pink"><strong>Fuzzy Design</strong></span>: Where there exists “cross-overs” (for various reasons)</p></li>
-</ul></li>
-<li><p><strong>With regard to Analytic Approach</strong>:</p>
+</ul>
+</li>
+<li>
+<p><strong>With regard to Analytic Approach</strong>:</p>
 <ul>
 <li><span class="hi-purple">Non-parametric: local randomization approach</span></li>
 <li>Parametric: uses every observation in the sample</li>
-</ul></li>
 </ul>
-</section>
-<section id="section-1" class="slide level2">
-<h2></h2>
+</li>
+</ul></section><section id="section-1" class="slide level2"><h2></h2>
 <ul>
 <li><p>Ideal for situations when there is a <span class="hi-purple"><strong>cut-score</strong></span> in which subjects above/below a threshold receive program resources or an intervention</p></li>
 <li><p>The variable used to determine the threshold is called the <span class="hi-purple"><strong>“rating” or “forcing”</strong></span> variable. Examples: GPA, household income</p></li>
 <li><p>Quasi-experimental design used to estimate the rigor and validity of a <strong>Randomized Control Trial (RCT)</strong></p></li>
 <li><p>In many fields, regression discontinuity are considered to be one of the most rigorous quasi-experimental methods</p></li>
-</ul>
-</section>
-<section id="internal-validity" class="slide level2">
-<h2><span class="hi-purple">Internal Validity</span></h2>
+</ul></section><section id="internal-validity" class="slide level2"><h2><span class="hi-purple">Internal Validity</span></h2>
 <ul>
-<li><p><strong>Imprecise Control</strong></p>
+<li>
+<p><strong>Imprecise Control</strong></p>
 <ul>
 <li>No one single entity or factor should determine a rating score. For a RDD to yield an unbiased LATE estimate at the cuttoff, it is important that the eligibility index not be manipulated around the cutoff so that an individual can change treatment control status.</li>
-</ul></li>
+</ul>
+</li>
 <li><p>Clear discontinuity for treatment status at the cut-point</p></li>
 </ul>
 <h3 id="the-scenario"><span class="hi-purple">The Scenario</span></h3>
 <ul>
 <li>Ehsaas scholarship criteria for grant of support is Rs.45,000 income of parents <em>prior to viewing any actual data</em>. A threshold of Rs.45,000/ month income is established: students below this cut-point will receive scholarshio, those above will not.</li>
 <li>Besides assistance, one may want to determine if scholarship proves effective in relation to final grade.</li>
-</ul>
-</section>
-<section id="model" class="slide level2">
-<h2><span class="hi-purple">Model</span></h2>
+</ul></section><section id="model" class="slide level2"><h2><span class="hi-purple">Model</span></h2>
 <p><span class="math display">\[ Y_i=\alpha+\beta_0 T_i+\beta_1 r_i+\epsilon\]</span> <span class="math inline">\(\alpha\)</span> is Estimated marginal mean ,<span class="math inline">\(\beta_0\)</span> is marginal impact of program, <span class="math inline">\(T_i\)</span> is Treatment status (0,1), <span class="math inline">\(\beta_1\)</span> is Relationship between scholarship and Final Grade, <span class="math inline">\(r_i\)</span> is Individual scores on the rating variable (Scholarship amount; centered)</p>
 <h3 id="simulation-data">Simulation Data</h3>
 <ul>
-<li><p>Institutional Data:</p>
+<li>
+<p>Institutional Data:</p>
 <ul>
 <li>Taken from supplemental instruction STEM report, N=589</li>
 <li>Scores are adjusted on outcome for demonstration purposes</li>
-</ul></li>
 </ul>
-</section>
-<section id="sharp-designs" class="slide level2 scrollable">
-<h2>Sharp Designs</h2>
+</li>
+</ul></section><section id="sharp-designs" class="slide level2 scrollable"><h2>Sharp Designs</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="co"># generate some sample data</span></span>
@@ -555,23 +539,21 @@ Zahid Asghar
 <span id="cb2-8"><a href="#cb2-8"></a><span class="do">## </span></span>
 <span id="cb2-9"><a href="#cb2-9"></a><span class="do">## Residuals:</span></span>
 <span id="cb2-10"><a href="#cb2-10"></a><span class="do">##    Min     1Q Median     3Q    Max </span></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="do">## -3.566 -0.655  0.002  0.668  3.222 </span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="do">## -3.736 -0.719  0.017  0.699  3.370 </span></span>
 <span id="cb2-12"><a href="#cb2-12"></a><span class="do">## </span></span>
 <span id="cb2-13"><a href="#cb2-13"></a><span class="do">## Coefficients:</span></span>
 <span id="cb2-14"><a href="#cb2-14"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="do">## (Intercept)   3.0083     0.0665    45.2   &lt;2e-16 ***</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a><span class="do">## D             9.9527     0.1213    82.1   &lt;2e-16 ***</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a><span class="do">## x             2.0410     0.1052    19.4   &lt;2e-16 ***</span></span>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="do">## (Intercept)   2.9402     0.0745    39.5   &lt;2e-16 ***</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="do">## D            10.1845     0.1325    76.9   &lt;2e-16 ***</span></span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="do">## x             1.9052     0.1155    16.5   &lt;2e-16 ***</span></span>
 <span id="cb2-18"><a href="#cb2-18"></a><span class="do">## ---</span></span>
 <span id="cb2-19"><a href="#cb2-19"></a><span class="do">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span id="cb2-20"><a href="#cb2-20"></a><span class="do">## </span></span>
-<span id="cb2-21"><a href="#cb2-21"></a><span class="do">## Residual standard error: 0.968 on 997 degrees of freedom</span></span>
-<span id="cb2-22"><a href="#cb2-22"></a><span class="do">## Multiple R-squared:  0.975,  Adjusted R-squared:  0.975 </span></span>
-<span id="cb2-23"><a href="#cb2-23"></a><span class="do">## F-statistic: 1.93e+04 on 2 and 997 DF,  p-value: &lt;2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="do">## Residual standard error: 1.04 on 997 degrees of freedom</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a><span class="do">## Multiple R-squared:  0.972,  Adjusted R-squared:  0.972 </span></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="do">## F-statistic: 1.71e+04 on 2 and 997 DF,  p-value: &lt;2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
-<section id="section-2" class="slide level2">
-<h2></h2>
+<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section><section id="section-2" class="slide level2"><h2></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># plot the sample data</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
@@ -582,9 +564,7 @@ Zahid Asghar
 <span id="cb3-7"><a href="#cb3-7"></a>     <span class="at">ylab =</span> <span class="st">"Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
-<section id="section-3" class="slide level2">
-<h2></h2>
+<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section><section id="section-3" class="slide level2"><h2></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># plot the RDD model along with binned observations</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="fu">plot</span>(rdd_mod,</span>
@@ -594,9 +574,7 @@ Zahid Asghar
 <span id="cb4-6"><a href="#cb4-6"></a>     <span class="at">ylab =</span> <span class="st">"Y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
-<section id="fuzzy-designs" class="slide level2">
-<h2><span class="hi-purple">Fuzzy Designs</span></h2>
+<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section><section id="fuzzy-designs" class="slide level2"><h2><span class="hi-purple">Fuzzy Designs</span></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">library</span>(MASS)</span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="co"># generate sample data</span></span>
@@ -615,9 +593,7 @@ Zahid Asghar
 <span id="cb5-15"><a href="#cb5-15"></a><span class="co"># treatment effect</span></span>
 <span id="cb5-16"><a href="#cb5-16"></a>d<span class="sc">$</span>Y <span class="ot">&lt;-</span> d<span class="sc">$</span>Y <span class="sc">+</span> fuzz <span class="sc">*</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="section-4" class="slide level2">
-<h2></h2>
+</section><section id="section-4" class="slide level2"><h2></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># generate a colored plot of treatment and control group</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="fu">plot</span>(d<span class="sc">$</span>W, d<span class="sc">$</span>Y,</span>
@@ -632,31 +608,27 @@ Zahid Asghar
 <span id="cb6-11"><a href="#cb6-11"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
-<section id="limitation-and-interpretation-of-rdd" class="slide level2">
-<h2>Limitation and Interpretation of RDD</h2>
+<img data-src="reg_DD_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section><section id="limitation-and-interpretation-of-rdd" class="slide level2"><h2>Limitation and Interpretation of RDD</h2>
 <ol type="1">
 <li>Estimates the impact of the program around the cut-off or locally, and not for all eligible. If policy is to evaluate program for all, then RDD may not be good choice.</li>
 <li>Complications for fuzzy RDD.</li>
 <li>Bandwidth: As large as possible</li>
 <li>Sensitive to functional form</li>
 </ol>
-<div class="callout callout-warning callout-captioned callout-style-default">
+<div class="callout callout-tips callout-captioned callout-style-default">
 <div class="callout-body">
 <div class="callout-caption">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Warning</strong></p>
+<p><strong>Tips</strong></p>
 </div>
 <div class="callout-content">
 <p>Eligibility rule or cutoff should be resistant to manipulation by enumerators, potential beneficiaries, program administrators, or politicians.</p>
 </div>
 </div>
 </div>
-</section>
-<section id="checklist-regression-discontinuity-design" class="slide level2">
-<h2>Checklist: Regression Discontinuity Design</h2>
+</section><section id="checklist-regression-discontinuity-design" class="slide level2"><h2>Checklist: Regression Discontinuity Design</h2>
 <ul>
 <li>Is the index continuous around the cutoff score at the time of the baseline?<br>
 </li>
@@ -670,30 +642,10 @@ Zahid Asghar
 <p><a href="https://zahidasghar.com/">zahid asghar</a></p>
 </div>
 </section>
-
-    </div>
+</div>
   </div>
 
-  <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="reg_DD_files/libs/revealjs/dist/reveal.js"></script>
-  <!-- reveal.js plugins -->
-  <script src="reg_DD_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/multiplex/socket.io.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/multiplex/multiplex.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/quarto-support/support.js"></script>
-  
-
-  <script src="reg_DD_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="reg_DD_files/libs/revealjs/plugin/math/math.js"></script>
-  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
-
-  <script>
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="reg_DD_files/libs/revealjs/dist/reveal.js"></script><!-- reveal.js plugins --><script src="reg_DD_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script><script src="reg_DD_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script><script src="reg_DD_files/libs/revealjs/plugin/reveal-menu/menu.js"></script><script src="reg_DD_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script><script src="reg_DD_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script><script src="reg_DD_files/libs/revealjs/plugin/multiplex/socket.io.js"></script><script src="reg_DD_files/libs/revealjs/plugin/multiplex/multiplex.js"></script><script src="reg_DD_files/libs/revealjs/plugin/quarto-support/support.js"></script><script src="reg_DD_files/libs/revealjs/plugin/notes/notes.js"></script><script src="reg_DD_files/libs/revealjs/plugin/search/search.js"></script><script src="reg_DD_files/libs/revealjs/plugin/zoom/zoom.js"></script><script src="reg_DD_files/libs/revealjs/plugin/math/math.js"></script><script>window.define = window.backupDefine; window.backupDefine = undefined;</script><script>
 
       // Full list of configuration options available at:
       // https://revealjs.com/config/
@@ -886,9 +838,7 @@ Zahid Asghar
           RevealZoom
         ]
       });
-    </script>
-    
-    <script>
+    </script><script>
       // htmlwidgets need to know to resize themselves when slides are shown/hidden.
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
@@ -923,9 +873,7 @@ Zahid Asghar
         }
 
       })();
-    </script>
-
-    <script id="quarto-html-after-body" type="application/javascript">
+    </script><script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
         const mode = bsSheetEl.getAttribute("data-mode");
@@ -1057,6 +1005,6 @@ Zahid Asghar
       }
     });
     </script>
-    
+
 
 </body></html>
